@@ -10,3 +10,4 @@ Depends: bayesLife
 Imports: wpp2017, hett, car, coda
 License: GPL (>= 2)
 URL: https://bayespop.csss.washington.edu
+Remotes: PPgP/bayesLife@bL4
