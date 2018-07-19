@@ -14,10 +14,10 @@ You can either install it the traditional way of cloning GitHub repositories and
 	3. Click "Generate token".
 	4. Save the token somewhere.
 
-2. Install **bayesLifeHIV** from GitHub: 
+2. Install **bayesLifeHIV** from GitHub:
 
 	```
-install_github("PPgP/bayesLifeHIV", auth_token = "my_token")
+	install_github("PPgP/bayesLifeHIV", auth_token = "my_token")
 ```
 	Replace ``my_token`` above with the token you saved in the previous step. This command should install **bayesLife** from the bL4 branch.
 
