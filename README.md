@@ -24,3 +24,22 @@ You can either install it the traditional way of cloning GitHub repositories and
 ### Usage
 #### MCMC estimation
 
+Here is an example of a toy simulation:
+
+```
+library(bayesLifeHIV)
+sim.dir <- "e0simHIV"
+m <- run.e0hiv.mcmc(nr.chains = 2, iter = 50, thin = 1, 
+			output.dir = sim.dir, replace.output = TRUE,
+			verbose = TRUE)
+
+```
+
+#### Projections
+
+To generate predictions for the toy simulation above, run the following command:
+ 
+```
+pred <- e0hiv.predict(sim.dir = sim.dir, burnin = 10, 
+			replace.output=TRUE)
+```

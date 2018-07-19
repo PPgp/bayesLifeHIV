@@ -15,6 +15,8 @@ compute.hiv.residuals <- function(sim.dir, burnin = 1000) {
     # The simulation should have run with constant.variance = TRUE.
     mc <- get.e0.mcmc(sim.dir)
     meta <- mc$meta
+    #bayesLife:::e0mcmc.options(meta$mcmc.options)
+    bayesLife:::e0mcmc.options(e0hivmcmc.options())
     cs.par.names <- c('Triangle.c', 'k.c', 'z.c')
     nT <- dim(meta$e0.matrix)[1]-1
     nC <- get.nrest.countries(meta)
@@ -22,8 +24,8 @@ compute.hiv.residuals <- function(sim.dir, burnin = 1000) {
     beta <- get.e0.parameter.traces(mc$mcmc.list, "betanonART", burnin = burnin)
     dlfunc <- function(t) {
         mean(apply(cbind(cs.pars, beta), 1, 
-            function(pars) g.dl6(pars[1:6], l = e0.obs[t], 
-                                p1 = meta$dl.p1, p2 = meta$dl.p2) + pars[7]*dlt[t]))
+            function(pars) bayesLife:::g.dl6(pars[1:6], l = e0.obs[t], 
+                                p1 = meta$mcmc.options$dl.p1, p2 = meta$mcmc.options$dl.p2) + pars[7]*dlt[t]))
     }
     # Compute residuals
     for(cntry in 1:nC) {
