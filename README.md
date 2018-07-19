@@ -19,6 +19,7 @@ You can either install it the traditional way of cloning GitHub repositories and
 	```
 	install_github("PPgP/bayesLifeHIV", auth_token = "my_token")
 ```
+
 	Replace ``my_token`` above with the token you saved in the previous step. This command should install **bayesLife** from the bL4 branch.
 
 ### Usage
