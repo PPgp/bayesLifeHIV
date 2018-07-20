@@ -131,3 +131,52 @@ The difference is that this time the global options were not changed, see ``e0mc
 
 ### Required Datasets
 
+The package requires three additional datasets that are beyond of what is needed in **bayesLife**. Currently, they are included in the package. Thus, when modifying them, they need to be put into the ``data`` directory, after which the package has to be re-compiled. Work on allowing to pass an own version of these datasets via arguments is in progress.
+
+All files are tab delimited, with the suffix ".txt"
+ 
+#### Estimation
+
+  * **HIVprevalence**: contains historical and projected HIV prevalence for countries with past or/and future epidemics. Currently it has 40 rows and 29 columns, corresponding to 40 countries and time periods from 1970 to 2100 (note that columns for future years are only used for scaling, see below). It has also a column "include\_code". Only countries are considered as epidemic in the estimation, if their "include\_code" is 1. View the dataset via
+  
+    ```
+    data(HIVprevalence)
+    head(HIVprevalence)
+    ```
+    
+  * **ARTcoverage**: contains historical and projected values of ART coverage for countries with past or/and future epidemics. It has the same structure as HIVprevalence, including the "include\_code" column. Countries considered as epidemic must have their "include\_code" set to 1 in both datasets, HIVprevalence and ARTcoverage. By default, all 40 countries are considered as epidemic. Note that in the estimation, only columns for historical time periods are used, while future time periods are used in the projections. View the dataset via
+  
+    ```
+    data(ARTcoverage)
+    head(ARTcoverage)
+    ```
+
+During the estimation, these two datasets are merged and converted into a delta(nonART) dataset, which is delta(hiv * (100 - art)/100), containing all countries. It can be accessed from an mcmc object, e.g. for an object ``m``:
+
+```
+m$meta$dlt.nart[, 1:10]
+```
+
+#### Projections
+
+  * **ARTcoverage**: as mentioned above, columns that correspond to future years are used in the projections. The datast is again filtered using the "include\_code" column.
+
+  * **HIVprevTrajectories**: these are probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have columns "country\_code", "Trajectory", and time periods "2010-2015", ..., "2095-2100". The default dataset contains 1000 trajectories for 40 countries (scaled to the HIVprevalence dataset, see below), thus resulting in a dimension of 40,000 x 20. View the dataset by 
+  
+    ```
+    data(HIVprevTrajectories)
+    head(HIVprevTrajectories)
+    ``` 
+     
+Similarly to the estimation, these two datasets are merged and converted into a dataset of delta(nonART) trajectories, which are then used in the prediction step.
+
+By default, countries considered as epidemic in the projection are those that have "include\_code" set to 3 in the ``include_2017`` dataset in the **bayesLife** package. This can be overwritten by the argument ``hiv.countries`` in ``e0hiv.predict()``, which should be a vector of country codes. However, in both cases, such countries are required to have records in both, the ARTcoverage and HIVprevTrajectories datasets.
+
+##### Trajectories Scaling 
+
+We have scaled our original HIV trajectories so that the median for each country aligns with the values in the **HIVprevalence** dataset (columns corresponding to future time periods). The **HIVprevTrajectories** is a result of such scaling. 
+
+The scaling (which uses adjusted logit) is implemented in the function ``scale.hiv.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). 
+
+We have chosen to process this step outside of **bayesLifeHIV**, as it does not make sense to include weird unscaled trajectories in the package.
+
