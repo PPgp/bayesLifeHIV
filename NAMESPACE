@@ -24,7 +24,8 @@ export(
 	e0hiv.meta.ini,
 	e0hiv.mcmc.sampling,
 	generate.e0hiv.trajectory,
-	e0hiv.get.dlcurves
+	e0hiv.get.dlcurves,
+	using.bayesLifeHIV
 )
 
 # register S3 methods

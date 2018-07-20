@@ -1,73 +1,18 @@
-if(getRversion() >= "2.15.1") utils::globalVariables(c("loess_sd", ".e0hivoptions"))
+if(getRversion() >= "2.15.1") utils::globalVariables(c("loess_sd"))
 data(loess_sd, envir = environment(), package = "bayesLifeHIV")
-
-e0hivmcmc.options <- function(...) {
-    e0hiv.options("mcmc", ...)
-}
-
-e0hivpred.options <- function(...) {
-    e0hiv.options("pred", ...)
-}
-
-
-e0hiv.options <- function(what, ...) {
-    # this code was adapted from mclust.options 
-    current <- .e0hivoptions
-    if (nargs() == 1) return(current[[what]])
-    args <- list(...)
-    if (length(args) == 1 && is.null(names(args))) {
-        arg <- args[[1]]
-        switch(mode(arg), 
-               list = args <- arg, 
-               character = return(current[[what]][[arg]]), 
-               stop("Invalid argument: ", dQuote(arg))
-        )
-    }
-    if (length(args) == 0) return(current[[what]])
-    if (is.null(names(args))) stop("Options must be given by name")
-    current[[what]] <- modifyList(current[[what]], args)
-    .e0hivoptions <<- current
-    invisible(current[[what]])
-}
-
-e0hiv.options.default <- function() {
-    opts <- bayesLife:::.e0options
-    opts$mcmc <- e0hiv.mcmc.options.default()
-    opts
-}
-
-e0hiv.mcmc.options.default <- function() {
-    opts <- bayesLife:::e0.mcmc.options.default()
-    within(opts, {
-        betanonART <- structure(list(ini = -0.5), npar = 1)
-        world.parameters <- c(world.parameters, betanonART = 1)
-        outliers <- c(-10, 10)
-        estimation.function <- "e0hiv.mcmc.sampling"
-        meta.ini.fun <- "e0hiv.meta.ini"
-        dlcurves.function <- "e0hiv.get.dlcurves"
-        include.hiv.countries <- TRUE
-    })
-}
-
-
 
 run.e0hiv.mcmc <- function(sex = c("Female", "Male"), nr.chains = 3, iter = 160000, 
 							output.dir = file.path(getwd(), 'bayesLifeHIV.output'), 
                             thin = 10, replace.output = FALSE,
                             start.year = 1873, present.year = 2015, wpp.year = 2017,
 							mcmc.options = NULL, ...) {
-    #defoptions <- e0hiv.mcmc.options.default()
-    old.opts <- e0hivmcmc.options()
-    hiv.opts <- old.opts
-    if(!is.null(mcmc.options))
-        hiv.opts <- e0hivmcmc.options(mcmc.options)
-        #hiv.opts <- modifyList(hiv.opts, mcmc.options)
+    old.opts <- e0mcmc.options()
 
     res <- run.e0.mcmc(sex = sex, nr.chains = nr.chains, iter = iter, output.dir = output.dir,
                 thin = thin, replace.output = replace.output, start.year = start.year,
-                present.year = present.year, wpp.year = wpp.year, mcmc.options = hiv.opts
+                present.year = present.year, wpp.year = wpp.year, mcmc.options = mcmc.options, ...
                 )
-    e0hivmcmc.options(old.opts)
+    e0mcmc.options(old.opts)
     invisible(res)
 }
 
@@ -152,5 +97,3 @@ e0hiv.meta.ini <- function(meta) {
 	meta$suppl.data$loessSD <- loessSD.suppl
 	return(meta)
 }
-
-.e0hivoptions <- e0hiv.options.default()

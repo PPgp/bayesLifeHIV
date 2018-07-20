@@ -107,14 +107,8 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
 
 make.e0hiv.prediction <- function(mcmc.set, pred.options = NULL, ...){
 	# if 'countries' is given, it is an index. The same for hiv.countries.
-    hiv.pred.opts <- e0hivpred.options()
-    hiv.mcmc.opts <- e0hivmcmc.options()
     if(!is.null(pred.options))
-        hiv.pred.opts <- e0hivpred.options(pred.options)
-    # overwrite bayesLife .e0options
-    bayesLife:::e0mcmc.options(hiv.mcmc.opts)
-    bayesLife:::e0pred.options(hiv.pred.opts)
-    
+        e0pred.options(pred.options)
     setup <- e0hiv.prediction.setup(mcmc.set, ...)
     pred <- bayesLife:::run.e0.projection.for.all.countries(setup, traj.fun = "generate.e0hiv.trajectory")
     pred$hiv.country.codes <- setup$hiv.country.codes

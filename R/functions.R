@@ -15,8 +15,6 @@ compute.hiv.residuals <- function(sim.dir, burnin = 1000) {
     # The simulation should have run with constant.variance = TRUE.
     mc <- get.e0.mcmc(sim.dir)
     meta <- mc$meta
-    #bayesLife:::e0mcmc.options(meta$mcmc.options)
-    bayesLife:::e0mcmc.options(e0hivmcmc.options())
     cs.par.names <- c('Triangle.c', 'k.c', 'z.c')
     nT <- dim(meta$e0.matrix)[1]-1
     nC <- get.nrest.countries(meta)
@@ -92,3 +90,4 @@ compute.hiv.loess <- function(sim.dir = NULL, burnin = 1000, residuals = NULL,
     }
     return(loess.sd)
 }
+
