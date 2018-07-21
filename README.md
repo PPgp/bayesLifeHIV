@@ -131,8 +131,7 @@ The difference is that this time the global options were not changed, see ``e0mc
 
 ### Required Datasets
 
-The package requires three additional datasets that are beyond of what is needed in **bayesLife**. Currently, they are included in the package. Thus, when modifying them, they need to be put into the ``data`` directory, after which the package has to be re-compiled. Work on allowing to pass an own version of these datasets via arguments is in progress.
-
+The package requires three additional datasets that are beyond of what is needed in **bayesLife**. Currently, they are included in the package in  the ``data`` directory. 
 All files are tab delimited, with the suffix ".txt"
  
 #### Estimation
@@ -143,6 +142,7 @@ All files are tab delimited, with the suffix ".txt"
     data(HIVprevalence)
     head(HIVprevalence)
     ```
+    The dataset can be overwritten by passing the name of the new file as the argument ``my.hiv.file`` in the ``run.e0hiv.mcmc()`` function.
     
   * **ARTcoverage**: contains historical and projected values of ART coverage for countries with past or/and future epidemics. It has the same structure as HIVprevalence, including the "include\_code" column. Countries considered as epidemic must have their "include\_code" set to 1 in both datasets, HIVprevalence and ARTcoverage. By default, all 40 countries are considered as epidemic. Note that in the estimation, only columns for historical time periods are used, while future time periods are used in the projections. View the dataset via
   
@@ -150,6 +150,7 @@ All files are tab delimited, with the suffix ".txt"
     data(ARTcoverage)
     head(ARTcoverage)
     ```
+    The dataset can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``run.e0hiv.mcmc()`` function.
 
 During the estimation, these two datasets are merged and converted into a delta(nonART) dataset, which is delta(hiv * (100 - art)/100), containing all countries. It can be accessed from an mcmc object, e.g. for an object ``m``:
 
@@ -167,7 +168,9 @@ m$meta$dlt.nart[, 1:10]
     data(HIVprevTrajectories)
     head(HIVprevTrajectories)
     ``` 
-     
+    Currently, there is no way to overwrite this dataset using an argument (it's a work in progress). The workaround is to put the new file into the ``data`` directory, after which the package has to be re-compiled.
+    
+    
 Similarly to the estimation, these two datasets are merged and converted into a dataset of delta(nonART) trajectories, which are then used in the prediction step.
 
 By default, countries considered as epidemic in the projection are those that have "include\_code" set to 3 in the ``include_2017`` dataset in the **bayesLife** package. This can be overwritten by the argument ``hiv.countries`` in ``e0hiv.predict()``, which should be a vector of country codes. However, in both cases, such countries are required to have records in both, the ARTcoverage and HIVprevTrajectories datasets.
@@ -179,4 +182,5 @@ We have scaled our original HIV trajectories so that the median for each country
 The scaling (which uses adjusted logit) is implemented in the function ``scale.hiv.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). 
 
 We have chosen to process this step outside of **bayesLifeHIV**, as it does not make sense to include weird unscaled trajectories in the package.
+
 

@@ -1,7 +1,7 @@
 
 # import
 import(
-    bayesTFR, bayesLife, wpp2017
+    wpp2017, data.table
 )
 #importFrom(car, dataEllipse, logit)
 #importFrom("utils", "data")
