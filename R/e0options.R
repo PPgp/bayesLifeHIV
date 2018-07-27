@@ -1,6 +1,7 @@
 e0hiv.options.default <- function() {
     opts <- bayesLife:::.e0options
     opts$mcmc <- e0hiv.mcmc.options.default()
+    opts$use <- "bayesLifeHIV"
     opts
 }
 

@@ -24,7 +24,9 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
                        sim.dir = file.path(getwd(), 'bayesLifeHIV.output'),
                        replace.output = FALSE, predict.jmale = TRUE, 
                        nr.traj = NULL, thin = NULL, burnin = 10000, 
-                       use.diagnostics = FALSE, hiv.countries = NULL, save.as.ascii = 1000, 
+                       use.diagnostics = FALSE, hiv.countries = NULL, 
+                       my.art.file = NULL, my.hivtraj.file = NULL,
+                       save.as.ascii = 1000, 
                        start.year = NULL, output.dir = NULL, low.memory = TRUE, 
                        seed = NULL, verbose = TRUE, ...){
 	if(!is.null(mcmc.set)) {
@@ -53,6 +55,12 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
 }
 
 e0hiv.prediction.setup <- function(mcmc.set, ...) {
+    convert.to.double <- function(dt) {
+        fcols <- setdiff(colnames(dt)[sapply(dt, class) != "numeric"], "country_code")
+        if(length(fcols) > 0)
+            dt[,(fcols):= lapply(.SD, as.double), .SDcols = fcols]
+        dt
+    }
     setup <- bayesLife:::e0.prediction.setup(mcmc.set = mcmc.set, ...)
     hiv.country.codes <- c()
     
@@ -61,42 +69,52 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     var.beta <- get.e0.parameter.traces(setup$load.mcmc.set$mcmc.list, var.beta.names, burnin = 0)
     # load hiv trajectories and convert to a 3d array
     hiv.env <- new.env()
-    art <- read.e0.data.file("ARTcoverage.txt")
+    art <- if(is.null(setup$my.art.file)) read.e0.data.file("ARTcoverage.txt") else fread(setup$my.art.file)
     if("include_code" %in% colnames(art))
-        art <- art[art$include_code == 1,]
-    rownames(art) <- art$country_code
-    art <- art[,-which(colnames(art) %in% c("country_code", "name", "country_name", "include_code"))]
-    colnames(art) <- as.integer(substr(colnames(art), 1,4))+3
-    data("HIVprevTrajectories", envir = hiv.env)
-    trajs <- hiv.env$HIVprevTrajectories
-    elim.cols <- which(colnames(trajs) %in% c("country_code", "Trajectory"))
-    years <- colnames(trajs)[-elim.cols]
-    mid.years <- substr(years, 1, 4)
-    mid.years <- as.integer(mid.years) + 3
-    mid.years.remove <- which(! mid.years %in% setup$proj.middleyears)
-    if(length(mid.years.remove) > 0) {
-        mid.years <- mid.years[-mid.years.remove]
-        elim.cols <- c(elim.cols, which(colnames(trajs) %in% years[mid.years.remove]))
+        art <- art[include_code == 1, ]
+    if(is.null(setup$my.hivtraj.file)) {
+        data("HIVprevTrajectories", envir = hiv.env)
+        hiv.traj <- data.table(hiv.env$HIVprevTrajectories)
+    } else hiv.traj <- fread(setup$my.hivtraj.file)
+    # delete some columns
+    for(col in c("include_code", "name", "country_name")) {
+        if(col %in% colnames(hiv.traj)) hiv.traj[[col]] <- NULL
+        if(col %in% colnames(art)) art[[col]] <- NULL
     }
-    if(length(mid.years) < length(setup$proj.middleyears))
-        stop("HIV trajectories missing for years ", 
-             paste(setdiff(setup$proj.middleyears[-1], mid.years), collapse = ", "))
-    colnames(trajs)[-elim.cols] <- mid.years
-    mid.years.char <- as.character(sort(mid.years))
+    # merge art and hiv and compute nonart
+    artl <- melt(convert.to.double(copy(art)), id.vars = "country_code", variable.name = "period", value.name = "art")
+    hivl <- melt(convert.to.double(copy(hiv.traj)), id.vars = c("country_code", "Trajectory"), variable.name = "period", value.name = "hiv")
+    hiv.art <- merge(hivl, artl, by = c("country_code" , "period"))
+    hiv.art[, nonart := hiv * (100 - art)/100]
+    hiv.art[, year := as.integer(substr(period, 1,4))+3]
+    # keep only projected time periods
+    hiv.art <- hiv.art[year %in% setup$proj.middleyears,]
+    # check if all years available
+    uyears <- unique(hiv.art$year)
+    missing <- setdiff(setup$proj.middleyears[-1], uyears)
+    if(length(missing) > 0)
+        stop("HIV trajectories or ART data missing for years ", 
+             paste(missing, collapse = ", "))
     hiv.country.idx <- if(is.null(get0("hiv.countries"))) which(setup$meta$regions$hiv.pred) else hiv.countries
     hiv.country.codes <- setup$meta$regions$country_code[hiv.country.idx]
-    if(any(! hiv.country.codes %in% trajs$country_code))
-        stop("HIV trajectories missing for countries ", 
-             paste(setdiff(unique(trajs$country_code), hiv.country.codes), collapse = ", "))
-    nr.hiv.traj <- length(unique(trajs$Trajectory))
+    if(any(! hiv.country.codes %in% hiv.art$country_code))
+        stop("HIV trajectories or ART data missing for countries ", 
+             paste(setdiff(unique(hiv.art$country_code), hiv.country.codes), collapse = ", "))
+    # keep only hiv countries
+    hiv.art <- hiv.art[country_code %in% hiv.country.codes,]
+    # convert back to wide format
+    nonartl <- hiv.art[ , .(country_code, Trajectory, year, nonart)]
+    nonart <- dcast(nonartl, country_code + Trajectory ~ year, value.var = "nonart") # wide format
+
+    # get a 3d array of the deltas
+    mid.years.char <- as.character(sort(uyears))
+    nr.hiv.traj <- length(unique(nonart$Trajectory))
     mid.years.minus1 <-  mid.years.char[-length(mid.years.char)]
     nondart.trajs <- array(NA, dim=c(length(hiv.country.codes), nr.hiv.traj,
                                      length(mid.years.minus1)),
                            dimnames = list(hiv.country.codes, NULL, mid.years.minus1))
     for(cntry in hiv.country.codes) {
-        tr <- (as.matrix(trajs[trajs$country_code == cntry, mid.years.char]) * 
-                   as.matrix(100 - art[rep(as.character(cntry), nr.hiv.traj), 
-                                       mid.years.char])/100)
+        tr <- as.matrix(nonart[country_code == cntry, mid.years.char, with = FALSE])
         nondart.trajs[as.character(cntry),, mid.years.minus1] <- tr[, 2:ncol(tr)] - tr[, 1:(ncol(tr)-1)]
     }
     setup$pred.env$ndart.trajs <- nondart.trajs
