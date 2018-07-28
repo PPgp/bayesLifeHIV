@@ -60,7 +60,7 @@ scale.hiv.trajectories <- function(trajectories = NULL, scale.to = NULL,
     # reorder so that countries are sorted
     trajs.med.mtx <- trajs.med[cntries.char,]
     
-    # Put the median dataset an the scale.to dataset into the same shape 
+    # Put the median dataset and the scale.to dataset into the same shape 
     # as trajectories by repeating rows nr.traj times.
     nr.trajs <- length(unique(trajectories$Trajectory))
     trajs.med.big <- apply(trajs.med.mtx, 2, rep.row, nr.trajs)

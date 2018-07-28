@@ -25,5 +25,4 @@ using.bayesLifeHIV <- function() {
         bayesLife:::e0.options(item, opt.default[[item]])
 }
 
-#.e0hivoptions <- e0hiv.options.default()
 using.bayesLifeHIV()

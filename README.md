@@ -160,7 +160,7 @@ m$meta$dlt.nart[, 1:10]
 
 #### Projections
 
-  * **ARTcoverage**: as mentioned above, columns that correspond to future years are used in the projections. The datast is again filtered using the "include\_code" column.
+  * **ARTcoverage**: as mentioned above, columns that correspond to future years are used in the projections. The dataset is again filtered using the "include\_code" column. The dafault ``ARTcoverage`` can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``e0hiv.predict()`` function.
 
   * **HIVprevTrajectories**: these are probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have columns "country\_code", "Trajectory", and time periods "2010-2015", ..., "2095-2100". The default dataset contains 1000 trajectories for 40 countries (scaled to the HIVprevalence dataset, see below), thus resulting in a dimension of 40,000 x 20. View the dataset by 
   
@@ -168,7 +168,7 @@ m$meta$dlt.nart[, 1:10]
     data(HIVprevTrajectories)
     head(HIVprevTrajectories)
     ``` 
-    Currently, there is no way to overwrite this dataset using an argument (it's a work in progress). The workaround is to put the new file into the ``data`` directory, after which the package has to be re-compiled.
+    The dataset can be overwritten by passing the name of the new file as the argument ``my.hivtraj.file`` in the ``e0hiv.predict()`` function. It has to have the same format as the default dataset. If scaling to the HIVprevalence dataset is desired on the user-defined data, set the argument ``scale.hivtraj`` to ``TRUE``.
     
     
 Similarly to the estimation, these two datasets are merged and converted into a dataset of delta(nonART) trajectories, which are then used in the prediction step.
@@ -181,6 +181,6 @@ We have scaled our original HIV trajectories so that the median for each country
 
 The scaling (which uses adjusted logit) is implemented in the function ``scale.hiv.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). 
 
-We have chosen to process this step outside of **bayesLifeHIV**, as it does not make sense to include weird unscaled trajectories in the package.
+We have chosen to process this step outside of **bayesLifeHIV**, as it does not make sense to include weird unscaled trajectories in the package. However, if a user passes own trajectories to the prediction function, the argument ``scale.hivtraj`` can be set to ``TRUE`` in which case scaling of the trajectories to the HIVprevalence dataset is performed on the fly.
 
 

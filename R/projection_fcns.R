@@ -25,7 +25,7 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
                        replace.output = FALSE, predict.jmale = TRUE, 
                        nr.traj = NULL, thin = NULL, burnin = 10000, 
                        use.diagnostics = FALSE, hiv.countries = NULL, 
-                       my.art.file = NULL, my.hivtraj.file = NULL,
+                       my.art.file = NULL, my.hivtraj.file = NULL, scale.hivtraj = FALSE,
                        save.as.ascii = 1000, 
                        start.year = NULL, output.dir = NULL, low.memory = TRUE, 
                        seed = NULL, verbose = TRUE, ...){
@@ -75,7 +75,11 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     if(is.null(setup$my.hivtraj.file)) {
         data("HIVprevTrajectories", envir = hiv.env)
         hiv.traj <- data.table(hiv.env$HIVprevTrajectories)
-    } else hiv.traj <- fread(setup$my.hivtraj.file)
+    } else {
+        hiv.traj <- fread(setup$my.hivtraj.file)
+        if(scale.hivtraj) 
+            hiv.traj <- data.table(scale.hiv.trajectories(data.frame(hiv.traj)))
+    }
     # delete some columns
     for(col in c("include_code", "name", "country_name")) {
         if(col %in% colnames(hiv.traj)) hiv.traj[[col]] <- NULL
