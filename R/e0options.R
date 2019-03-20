@@ -14,6 +14,8 @@ e0hiv.mcmc.options.default <- function() {
         estimation.function <- "e0hiv.mcmc.sampling"
         meta.ini.fun <- "e0hiv.meta.ini"
         dlcurves.function <- "e0hiv.get.dlcurves"
+        #parallel.init.function <- "bayesLifeHIV:::init.nodes.e0hiv"
+        parallel.init.function <- function(){library(bayesLifeHIV)}
         include.hiv.countries <- TRUE
     })
 }

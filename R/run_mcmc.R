@@ -113,3 +113,7 @@ e0hiv.meta.ini <- function(meta) {
 	meta$suppl.data$loessSD <- loessSD.suppl
 	return(meta)
 }
+
+init.nodes.e0hiv <- function() {
+    library(bayesLifeHIV)
+}
