@@ -16,7 +16,6 @@ run.e0hiv.mcmc <- function(sex = c("Female", "Male"), nr.chains = 3, iter = 1600
                 thin = thin, replace.output = replace.output, start.year = start.year,
                 present.year = present.year, wpp.year = wpp.year, mcmc.options = mcmc.options, ...
                 )
-    
     e0mcmc.options(old.opts)
     invisible(res)
 }
@@ -31,7 +30,6 @@ e0hiv.meta.ini <- function(meta) {
             dt[,(fcols):= lapply(.SD, as.double), .SDcols = fcols]
         dt
     }
-    
 	nT <- nrow(meta$e0.matrix)
 	loessSD <- meta$loessSD
 	dlt.nart <- NULL

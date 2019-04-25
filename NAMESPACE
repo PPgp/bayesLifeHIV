@@ -3,6 +3,7 @@
 import(
     wpp2017, data.table
 )
+importFrom(car, logit)
 #importFrom(car, dataEllipse, logit)
 #importFrom("utils", "data")
 #importFrom("graphics", "abline", "grid", "legend", "lines", "plot", "points", "text")

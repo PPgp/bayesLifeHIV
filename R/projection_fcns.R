@@ -25,7 +25,8 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
                        replace.output = FALSE, predict.jmale = TRUE, 
                        nr.traj = NULL, thin = NULL, burnin = 10000, 
                        use.diagnostics = FALSE, hiv.countries = NULL, 
-                       my.art.file = NULL, my.hivtraj.file = NULL, scale.hivtraj = FALSE,
+                       my.art.file = NULL, my.hivtraj.file = NULL, 
+                       scale.hivtraj = FALSE, scale.hivtraj.tofile = NULL,
                        save.as.ascii = 1000, 
                        start.year = NULL, output.dir = NULL, low.memory = TRUE, 
                        seed = NULL, verbose = TRUE, ...){
@@ -45,10 +46,13 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
 	}
     if(!is.null(hiv.countries)) # convert to index
         hiv.countries <- which(mcmc.set$meta$regions$country_code %in% hiv.countries)
-	pred <- make.e0hiv.prediction(mcmc.set, end.year=end.year, replace.output=replace.output,  
-					nr.traj=nr.traj, thin=thin, burnin=burnin, hiv.countries = hiv.countries, 
-					save.as.ascii=save.as.ascii, start.year=start.year,
-					output.dir=output.dir, verbose=verbose)
+	pred <- make.e0hiv.prediction(mcmc.set, end.year = end.year, replace.output = replace.output,  
+					nr.traj = nr.traj, thin = thin, burnin = burnin, hiv.countries = hiv.countries, 
+					save.as.ascii = save.as.ascii, start.year = start.year,
+					output.dir = output.dir, my.art.file = my.art.file, 
+					my.hivtraj.file = my.hivtraj.file, scale.hivtraj = scale.hivtraj,
+					scale.hivtraj.tofile = scale.hivtraj.tofile,
+					verbose = verbose)
 	if(predict.jmale && mcmc.set$meta$sex == 'F')
 		pred <- e0.jmale.predict(pred, ..., save.as.ascii=save.as.ascii, verbose=verbose)
 	invisible(pred)
@@ -77,8 +81,14 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
         hiv.traj <- data.table(hiv.env$HIVprevTrajectories)
     } else {
         hiv.traj <- fread(setup$my.hivtraj.file)
-        if(scale.hivtraj) 
-            hiv.traj <- data.table(scale.hiv.trajectories(data.frame(hiv.traj)))
+        if(setup$scale.hivtraj)  {
+            scale.to <- NULL
+            if(!is.null(setup$scale.hivtraj.tofile))
+                scale.to <- fread(setup$scale.hivtraj.tofile)
+            hiv.traj <- data.table(scale.hiv.trajectories(
+                            data.frame(hiv.traj, check.names = FALSE),
+                            scale.to = data.frame(scale.to, check.names = FALSE)))
+        }
     }
     # delete some columns
     for(col in c("include_code", "name", "country_name")) {
@@ -103,7 +113,7 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     hiv.country.codes <- setup$meta$regions$country_code[hiv.country.idx]
     if(any(! hiv.country.codes %in% hiv.art$country_code))
         stop("HIV trajectories or ART data missing for countries ", 
-             paste(setdiff(unique(hiv.art$country_code), hiv.country.codes), collapse = ", "))
+             paste(setdiff(hiv.country.codes, unique(hiv.art$country_code)), collapse = ", "))
     # keep only hiv countries
     hiv.art <- hiv.art[country_code %in% hiv.country.codes,]
     # convert back to wide format
