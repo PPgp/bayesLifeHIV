@@ -109,7 +109,7 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     if(length(missing) > 0)
         stop("HIV trajectories or ART data missing for years ", 
              paste(missing, collapse = ", "))
-    hiv.country.idx <- if(is.null(get0("hiv.countries"))) which(setup$meta$regions$hiv.pred) else hiv.countries
+    hiv.country.idx <- if(is.null(setup$hiv.countries)) which(setup$meta$regions$hiv.pred) else setup$hiv.countries
     hiv.country.codes <- setup$meta$regions$country_code[hiv.country.idx]
     if(any(! hiv.country.codes %in% hiv.art$country_code))
         stop("HIV trajectories or ART data missing for countries ", 
@@ -134,6 +134,7 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     setup$pred.env$ndart.trajs <- nondart.trajs
     setup$pred.env$hiv.traj.idx <- sample(1:nr.hiv.traj, setup$nr_simu, replace=TRUE)
     setup$pred.env$var.beta <- var.beta
+    setup$hiv.country.codes <- hiv.country.codes
     return(setup)
 }
 
