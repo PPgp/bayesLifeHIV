@@ -44,7 +44,7 @@ e0hiv.predict(mcmc.set = NULL, end.year = 2100,
   \item{\dots}{Additional arguments passed to the \code{\link[bayesLife]{e0.jmale.predict}} function.}
 }
 \details{
-Works similarly as the \code{\link[bayesLife]{e0.predict}} function of the \pkg{\link[bayesLife]{bayesLife} package. For countries with future HIV epidemic, it uses trajectories of projected HIV prevelance as well as projected ART coverage to account for future HIV/AIDS epidemics, as described in Godwin and Raftery (2017).
+Works similarly as the \code{\link[bayesLife]{e0.predict}} function of the \pkg{\link[bayesLife]{bayesLife}} package. For countries with future HIV epidemic, it uses trajectories of projected HIV prevelance as well as projected ART coverage to account for future HIV/AIDS epidemics, as described in Godwin and Raftery (2017).
 
 See \code{\link[bayesLife]{e0.predict}} for more details.
 
