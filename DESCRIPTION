@@ -2,12 +2,12 @@ Package: bayesLifeHIV
 Type: Package
 Title: Bayesian Projection of Life Expectancy with HIV
 Version:1.0-0
-Date: 2018-01-11
+Date: 2019-06-17
 Author: Hana Sevcikova, Jessica Godwin, Adrian Raftery
 Maintainer: Hana Sevcikova <hanas@uw.edu>
 Description: Making probabilistic projections of life expectancy for all countries of the world, using a Bayesian hierarchical model <doi:10.1007/s13524-012-0193-x>.
-Depends: bayesLife
+Depends: bayesLife (>= 4.0-2)
 Imports: wpp2017, hett, car, coda, data.table
 License: GPL (>= 2)
 URL: https://bayespop.csss.washington.edu
-Remotes: PPgP/bayesLife@bL4
+
