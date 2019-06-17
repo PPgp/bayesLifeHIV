@@ -2,24 +2,19 @@
 
 [![Travis-CI Build Status](https://travis-ci.org/PPgp/bayesLifeHIV.svg?branch=master)](https://travis-ci.org/PPgp/bayesLifeHIV)
 
-Extension of the **bayesLife** R package that takes into account HIV/AIDS. It requires a version of **bayesLife** from the [bL4 branch](https://github.com/PPgp/bayesLife/tree/bL4).
+Extension of the **bayesLife** R package that takes into account HIV/AIDS, as described in Godwin and Raftery (2017). It requires **bayesLife** version 4.0-2 or higher.
 
 ### Installation
 
 You can either install it the traditional way of cloning GitHub repositories and installing the packages from local directories. Or you can use the **devtools** package as shown below.
 
-1. Since **bayesLifeHIV** is currently a private repository, create an access token from [here](https://github.com/settings/tokens):
-	1. Click on "Generate New Token".
-	2. Enter a description (e.g. "installing bayesLifeHIV") and check the "repo" button.
-	3. Click "Generate token".
-	4. Save the token somewhere.
-
-2. Install **bayesLifeHIV** from GitHub:
+* Install **bayesLifeHIV** from GitHub:
 
 	```
-	install_github("PPgP/bayesLifeHIV", auth_token = "my_token")
+	library(devtools)
+	install_github("PPgP/bayesLifeHIV")
 	```
-	Replace ``my_token`` above with the token you saved in the previous step. This command should install **bayesLife** from the bL4 branch.
+	
 
 ### Usage
 
@@ -38,7 +33,7 @@ When you switch to a **bayesLife** simulation, do
 using.bayesLife()
 ```
 
-Those two functions reset the global settings to the defaults of the respective package.
+The two functions above reset the global settings to the defaults of the respective package.
  
 #### MCMC estimation
 
@@ -51,7 +46,7 @@ m <- run.e0hiv.mcmc(nr.chains = 2, iter = 50, thin = 1,
 			verbose = TRUE)
 
 ```
-
+The function above estimates MCMCs for ALL countries, non-epidemic as  well as epidemic. 
 Countries considered as epidemic in the estimation can be viewed via
 
 ```
@@ -66,18 +61,19 @@ e0.partraces.plot(m)
 
 #### Projections
 
-To generate predictions for the toy simulation above, run the following command:
+To generate predictions for all countries for the toy simulation above, run the following command:
  
 ```
 pred <- e0hiv.predict(sim.dir = sim.dir, burnin = 10, 
 			replace.output=TRUE)
 ```
-
+Again, this generates predictions for non-epidemic as well as epidemic countries. 
 Countries considered as epidemic in the prediction can be viewed via
 
 ```
 hiv.countries.pred(m$meta)
 ```
+
 Summaries, trajectory plots, maps etc. can be viewed as with ususal **bayesLife** objects, see ``?bayesLife``. E.g.
 
 
@@ -87,7 +83,7 @@ e0.map.gvis(pred)
 
 #### MCMC settings
 
-In this version of **bayesLife** (branch bL4) and thus **bayesLifeHIV**, the ``run.e0.mcmc()`` and ``run.e0hiv.mcmc()`` functions were made cleaner in a way that many of the arguments were moved into global options. They can be viewed using 
+In this version of **bayesLife** (version 4.0 and higher) and thus **bayesLifeHIV**, the ``run.e0.mcmc()`` and ``run.e0hiv.mcmc()`` functions were made cleaner in a way that many of the arguments were moved into global options. They can be viewed using 
 
 ```
 e0mcmc.options()
@@ -136,7 +132,7 @@ All files are tab delimited, with the suffix ".txt"
  
 #### Estimation
 
-  * **HIVprevalence**: contains historical and projected HIV prevalence for countries with past or/and future epidemics. Currently it has 40 rows and 29 columns, corresponding to 40 countries and time periods from 1970 to 2100 (note that columns for future years are only used for scaling, see below). It has also a column "include\_code". Only countries are considered as epidemic in the estimation, if their "include\_code" is 1. View the dataset via
+  * **HIVprevalence**: contains historical and projected HIV prevalence for countries with past or/and future epidemics. Currently it has 58 rows and 29 columns, corresponding to 58 countries and time periods from 1970 to 2100 (note that columns for future years are only used for scaling, see below). It has also a column "include\_code". Only countries are considered as epidemic in the estimation, if their "include\_code" is 1. View the dataset via
   
     ```
     data(HIVprevalence)
@@ -144,7 +140,7 @@ All files are tab delimited, with the suffix ".txt"
     ```
     The dataset can be overwritten by passing the name of the new file as the argument ``my.hiv.file`` in the ``run.e0hiv.mcmc()`` function.
     
-  * **ARTcoverage**: contains historical and projected values of ART coverage for countries with past or/and future epidemics. It has the same structure as HIVprevalence, including the "include\_code" column. Countries considered as epidemic must have their "include\_code" set to 1 in both datasets, HIVprevalence and ARTcoverage. By default, all 40 countries are considered as epidemic. Note that in the estimation, only columns for historical time periods are used, while future time periods are used in the projections. View the dataset via
+  * **ARTcoverage**: contains historical and projected values of ART coverage for countries with past or/and future epidemics. It has the same structure as HIVprevalence, including the "include\_code" column. Countries considered as epidemic must have their "include\_code" set to 1 in both datasets, HIVprevalence and ARTcoverage. By default, all 58 countries are considered as epidemic. Note that in the estimation, only columns for historical time periods are used, while future time periods are used in the projections. View the dataset via
   
     ```
     data(ARTcoverage)
@@ -160,9 +156,9 @@ m$meta$dlt.nart[, 1:10]
 
 #### Projections
 
-  * **ARTcoverage**: as mentioned above, columns that correspond to future years are used in the projections. The dataset is again filtered using the "include\_code" column. The dafault ``ARTcoverage`` can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``e0hiv.predict()`` function.
+  * **ARTcoverage**: as mentioned above, columns that correspond to future years are used in the projections. The dataset is again filtered using the "include\_code" column. The default ``ARTcoverage`` can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``e0hiv.predict()`` function.
 
-  * **HIVprevTrajectories**: these are probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have columns "country\_code", "Trajectory", and time periods "2010-2015", ..., "2095-2100". The default dataset contains 1000 trajectories for 40 countries (scaled to the HIVprevalence dataset, see below), thus resulting in a dimension of 40,000 x 20. View the dataset by 
+  * **HIVprevTrajectories**: these are probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have columns "country\_code", "Trajectory", and time periods "2010-2015", ..., "2095-2100". The default dataset contains 1000 trajectories for 58 countries (scaled to the HIVprevalence dataset, see below), thus resulting in a dimension of 58,000 x 20. View the dataset by 
   
     ```
     data(HIVprevTrajectories)
@@ -173,14 +169,18 @@ m$meta$dlt.nart[, 1:10]
     
 Similarly to the estimation, these two datasets are merged and converted into a dataset of delta(nonART) trajectories, which are then used in the prediction step.
 
-By default, countries considered as epidemic in the projection are those that have "include\_code" set to 3 in the ``include_2017`` dataset in the **bayesLife** package. This can be overwritten by the argument ``hiv.countries`` in ``e0hiv.predict()``, which should be a vector of country codes. However, in both cases, such countries are required to have records in both, the ARTcoverage and HIVprevTrajectories datasets.
+By default, countries considered as epidemic in the projection are those that have "include\_code" set to 3 in the ``include_{wpp}`` dataset in the **bayesLife** package. This can be overwritten by the argument ``hiv.countries`` in ``e0hiv.predict()``, which should be a vector of country codes. However, in both cases, such countries are required to have records in both, the ARTcoverage and HIVprevTrajectories datasets.
 
 ##### Trajectories Scaling 
 
 We have scaled our original HIV trajectories so that the median for each country aligns with the values in the **HIVprevalence** dataset (columns corresponding to future time periods). The **HIVprevTrajectories** is a result of such scaling. 
 
-The scaling (which uses adjusted logit) is implemented in the function ``scale.hiv.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). 
+The scaling (which uses adjusted logit) is implemented in the function ``scale.hiv.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). Alternatively, it can be performed on the fly within the prediction function ``e0hiv.predict`` by setting the argument ``scale.hivtraj`` to ``TRUE``. Argument ``scale.hivtraj.tofile`` in ``e0hiv.predict`` can be used to pass the file name containing the dataset to be scaled to. The HIVprevalence dataset is used as the default.
 
-We have chosen to process this step outside of **bayesLifeHIV**, as it does not make sense to include weird unscaled trajectories in the package. However, if a user passes own trajectories to the prediction function, the argument ``scale.hivtraj`` can be set to ``TRUE`` in which case scaling of the trajectories to the HIVprevalence dataset is performed on the fly.
+### Note
 
+This package is still under construction, especially the documentation needs some more work. We apologize for the inconvenience. 
 
+### References
+
+[Godwin, J. and Raftery, A.E. (2017): Bayesian projection of life expectancy accounting for the HIV/AIDS epidemic. Demographic Research 37(48):1549–1610.](http://www.demographic-research.org/Volumes/Vol37/48)
