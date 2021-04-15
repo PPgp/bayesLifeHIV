@@ -1,14 +1,9 @@
 
 # import
 import(
-    wpp2017, data.table
+    wpp2019, data.table
 )
 importFrom(car, logit)
-#importFrom(car, dataEllipse, logit)
-#importFrom("utils", "data")
-#importFrom("graphics", "abline", "grid", "legend", "lines", "plot", "points", "text")
-#importFrom("grDevices", "rainbow")
-#importFrom("stats", "dgamma", "dnorm", "dunif", "median", "pnorm", "quantile", "rexp", "rgamma", "rnorm", "rt", "runif", "sd")
 
 #exportPattern("^[[:alpha:]]+")
 useDynLib(bayesLifeHIV, .registration = TRUE)
