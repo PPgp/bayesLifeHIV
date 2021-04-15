@@ -4,7 +4,7 @@ data(loess_sd, envir = environment(), package = "bayesLifeHIV")
 run.e0hiv.mcmc <- function(sex = c("Female", "Male"), nr.chains = 3, iter = 160000, 
 							output.dir = file.path(getwd(), 'bayesLifeHIV.output'), 
                             thin = 10, replace.output = FALSE,
-                            start.year = 1873, present.year = 2015, wpp.year = 2017,
+                            start.year = 1873, present.year = 2020, wpp.year = 2019,
 							my.hiv.file = NULL, my.art.file = NULL,
 							mcmc.options = NULL, ...) {
     old.opts <- e0mcmc.options()
@@ -53,7 +53,8 @@ e0hiv.meta.ini <- function(meta) {
 	artl <- melt(convert.to.double(copy(art)), id.vars = "country_code", variable.name = "period", value.name = "art")
     hiv.art <- merge(hivl, artl, by = c("country_code" , "period"))
     hiv.art[, nonart := hiv * (100 - art)/100]
-    hiv.art[, year := as.integer(substr(period, 1,4))+3]
+    hiv.art[, year := as.integer(substr(period, 1,4))]
+    if(!meta$annual.simulation) hiv.art[, year := year + 3]
 
     # match years with e0 matrix and convert back to a wide format
     hiv.art <- hiv.art[year %in% rownames(meta$e0.matrix), ]

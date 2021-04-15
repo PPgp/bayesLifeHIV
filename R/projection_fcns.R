@@ -100,7 +100,9 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     hivl <- melt(convert.to.double(copy(hiv.traj)), id.vars = c("country_code", "Trajectory"), variable.name = "period", value.name = "hiv")
     hiv.art <- merge(hivl, artl, by = c("country_code" , "period"))
     hiv.art[, nonart := hiv * (100 - art)/100]
-    hiv.art[, year := as.integer(substr(period, 1,4))+3]
+    hiv.art[, year := as.integer(substr(period, 1,4))]
+    if(setup$year.step > 1)
+        hiv.art[, year := year + 3]
     # keep only projected time periods
     hiv.art <- hiv.art[year %in% setup$proj.middleyears,]
     # check if all years available
