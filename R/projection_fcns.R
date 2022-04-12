@@ -28,7 +28,8 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
                        my.art.file = NULL, my.hivtraj.file = NULL, 
                        scale.hivtraj = FALSE, scale.hivtraj.tofile = NULL,
                        save.as.ascii = 1000, 
-                       start.year = NULL, output.dir = NULL, low.memory = TRUE, 
+                       start.year = NULL, output.dir = NULL, 
+                       low.memory = TRUE, ignore.last.observed = FALSE,
                        seed = NULL, verbose = TRUE, ...){
 	if(!is.null(mcmc.set)) {
 		if (class(mcmc.set) != 'bayesLife.mcmc.set') {
@@ -51,7 +52,7 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
 					save.as.ascii = save.as.ascii, start.year = start.year,
 					output.dir = output.dir, my.art.file = my.art.file, 
 					my.hivtraj.file = my.hivtraj.file, scale.hivtraj = scale.hivtraj,
-					scale.hivtraj.tofile = scale.hivtraj.tofile,
+					scale.hivtraj.tofile = scale.hivtraj.tofile, ignore.last.observed = ignore.last.observed,
 					verbose = verbose)
 	if(predict.jmale && mcmc.set$meta$sex == 'F')
 		pred <- e0.jmale.predict(pred, ..., save.as.ascii=save.as.ascii, verbose=verbose)
