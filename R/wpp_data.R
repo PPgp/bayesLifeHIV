@@ -1,5 +1,5 @@
 scale.hiv.trajectories <- function(trajectories = NULL, scale.to = NULL,
-                                   logit.adjust = 0.001) {
+                                   logit.adjust = 0.001, annual = FALSE) {
     # Scale given trajectories to a data frame given by scale.to.
     # scale.to should have a column country_code. Other columns should 
     # be named by time periods, e.g. 2025-2030, 2030-2035 etc.
@@ -19,12 +19,14 @@ scale.hiv.trajectories <- function(trajectories = NULL, scale.to = NULL,
     }
     env <- new.env()
     if(is.null(scale.to)) {
-        data("HIVprevalence", envir = env)
-        scale.to <- env$HIVprevalence
+        prevalence.name <- if(annual) "HIVprevalence1y" else "HIVprevalence"
+        data(prevalence.name, envir = env)
+        scale.to <- env[[prevalence.name]]
     }
     if(is.null(trajectories)) {
-        data("HIVprevTrajectories", envir = env)
-        trajectories <- env$HIVprevTrajectories
+        traj.name <- if(annual) "HIVprevTrajectories1y" else "HIVprevTrajectories"
+        data(traj.name, envir = env)
+        trajectories <- env[[traj.name]]
     }
     if(! "country_code" %in% colnames(trajectories))
         stop("Column country_code is missing in dataset trajectories.")

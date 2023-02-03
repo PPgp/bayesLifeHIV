@@ -20,8 +20,12 @@ run.e0hiv.mcmc <- function(sex = c("Female", "Male"), nr.chains = 3, iter = 1600
     invisible(res)
 }
 
-read.e0.data.file <- function(file)
-    fread(file.path(find.package("bayesLifeHIV"), "data", file))
+read.e0.data.file <- function(dataset){
+    e <- new.env()
+    data(list = dataset, envir = e)
+    return(data.table(e[[dataset]]))
+    #fread(file.path(find.package("bayesLifeHIV"), "data", file))
+}
 
 e0hiv.meta.ini <- function(meta) {
     convert.to.double <- function(dt) {
@@ -36,8 +40,14 @@ e0hiv.meta.ini <- function(meta) {
 	opts <- meta$mcmc.options
 	
 	# read HIV and ART files and cleanup
-	hiv <- if(is.null(opts$my.hiv.file)) read.e0.data.file("HIVprevalence.txt") else fread(opts$my.hiv.file)
-	art <- if(is.null(opts$my.art.file)) read.e0.data.file("ARTcoverage.txt") else fread(opts$my.art.file)
+	hiv.prev.ds <- "HIVprevalence"
+	art.cov.ds <- "ARTcoverage"
+	if(meta$annual.simulation){
+	    hiv.prev.ds <- paste0(hiv.prev.ds, "1y")
+	    art.cov.ds <- paste0(art.cov.ds, "1y")
+	}
+	hiv <- if(is.null(opts$my.hiv.file)) read.e0.data.file(hiv.prev.ds) else fread(opts$my.hiv.file)
+	art <- if(is.null(opts$my.art.file)) read.e0.data.file(art.cov.ds) else fread(opts$my.art.file)
 	if("include_code" %in% colnames(hiv))
         hiv <- hiv[include_code == 1,]
 	if("include_code" %in% colnames(art))

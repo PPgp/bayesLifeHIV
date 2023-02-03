@@ -74,12 +74,18 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     var.beta <- get.e0.parameter.traces(setup$load.mcmc.set$mcmc.list, var.beta.names, burnin = 0)
     # load hiv trajectories and convert to a 3d array
     hiv.env <- new.env()
-    art <- if(is.null(setup$my.art.file)) read.e0.data.file("ARTcoverage.txt") else fread(setup$my.art.file)
+    art.cov.ds <- "ARTcoverage"
+    hiv.traj.ds <- "HIVprevTrajectories"
+    if(setup$meta$annual.simulation) {
+        art.cov.ds <- paste0(art.cov.ds, "1y")
+        hiv.traj.ds <- paste0(hiv.traj.ds, "1y")
+    }
+    art <- if(is.null(setup$my.art.file)) read.e0.data.file(art.cov.ds) else fread(setup$my.art.file)
     if("include_code" %in% colnames(art))
         art <- art[include_code == 1, ]
     if(is.null(setup$my.hivtraj.file)) {
-        data("HIVprevTrajectories", envir = hiv.env)
-        hiv.traj <- data.table(hiv.env$HIVprevTrajectories)
+        data(list = hiv.traj.ds, envir = hiv.env)
+        hiv.traj <- data.table(hiv.env[[hiv.traj.ds]])
     } else {
         hiv.traj <- fread(setup$my.hivtraj.file)
         if(setup$scale.hivtraj)  {
@@ -88,7 +94,8 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
                 scale.to <- fread(setup$scale.hivtraj.tofile)
             hiv.traj <- data.table(scale.hiv.trajectories(
                             data.frame(hiv.traj, check.names = FALSE),
-                            scale.to = data.frame(scale.to, check.names = FALSE)))
+                            scale.to = data.frame(scale.to, check.names = FALSE),
+                            annual = setup$meta$annual.simulation))
         }
     }
     # delete some columns
