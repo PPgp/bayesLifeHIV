@@ -1,5 +1,7 @@
-1.1-0.9000 (2021-04-15)
+1.1-0.9xxx (2024-03-24)
 -----
+Fixed loess for countries with e0 < 15.
+
 Option for annual simulation added. 
 
 Default wpp.year changed to 2019.

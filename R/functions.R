@@ -5,6 +5,7 @@ loess.lookup.hiv <- function(look, is.hiv) {
     find.look <- function(value, hiv) {
         look.in <- if(hiv) loess.sd$hiv else loess.sd
         idx <- cut(value, look.in$x, labels=FALSE, include.lowest = TRUE)
+        if(is.na(idx) && value < min(look.in$x)) idx <- 1
         look.in$y[idx]
     }
     mapply(find.look, look, is.hiv)
