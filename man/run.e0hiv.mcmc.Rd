@@ -11,7 +11,7 @@ Runs Markov Chains Monte Carlo (MCMCs) for simulating the life expectancy for al
 run.e0hiv.mcmc(sex = c("Female", "Male"), nr.chains = 3, iter = 160000, 
     output.dir = file.path(getwd(), "bayesLifeHIV.output"), 
     thin = 10, replace.output = FALSE, 
-    start.year = 1873, present.year = 2015, wpp.year = 2017, 
+    start.year = 1873, present.year = 2020, wpp.year = 2019, 
     my.hiv.file = NULL, my.art.file = NULL, 
     mcmc.options = NULL, \dots)
 }
@@ -25,7 +25,7 @@ run.e0hiv.mcmc(sex = c("Female", "Male"), nr.chains = 3, iter = 160000,
   \item{replace.output}{If \code{TRUE}, existing outputs in \code{output.dir} will be replaced by results of this simulation.}
   \item{start.year}{Start year for using historical data.}
   \item{present.year}{End year for using historical data.}
-  \item{wpp.year}{Year for which WPP data is used. The functions loads a package called \pkg{wpp}\eqn{x} where \eqn{x} is the \code{wpp.year} and uses the \code{\link[wpp2017]{e0}*} datasets.}
+  \item{wpp.year}{Year for which WPP data is used. The functions loads a package called \pkg{wpp}\eqn{x} where \eqn{x} is the \code{wpp.year} and uses the \code{\link[wpp2019]{e0}*} datasets.}
   \item{my.hiv.file}{File name containing user-specified historical HIV prevalence for countries with past epidemics. It should have the same format as the default \code{\link{HIVprevalence}} dataset. Only countries are considered as epidemic in the estimation, if their \dQuote{include_code} column is 1.}
   \item{my.art.file}{File name containing user-specified historical values of ART coverage for countries with past epidemics. It has the same format as \code{my.hiv.file}. If not given, the default dataset, \code{\link{ARTcoverage}}, is used.}
   \item{mcmc.options}{List of options that overwrites global MCMC options as defined in \code{\link{e0mcmc.options}}. Type \code{using.bayesLifeHIV(); e0mcmc.options()} to view default values.}
@@ -43,7 +43,7 @@ See \code{\link[bayesLife]{run.e0.mmc}} for more details.
 	An object of class \code{\link[bayesLife]{bayesLife.mcmc.set}}.
 }
 \references{
-Godwin, J. and Raftery, A.E. (2017): Bayesian projection of life expectancy accounting for the HIV/AIDS epidemic. Demographic Research 37(48):1549–1610.
+Godwin, J. and Raftery, A.E. (2017): Bayesian projection of life expectancy accounting for the HIV/AIDS epidemic. Demographic Research 37(48):1549-1610.
 
 J. L. Chunn, A. E. Raftery, P. Gerland, H. Sevcikova (2013): Bayesian Probabilis
 tic Projections of Life Expectancy for All Countries. Demography 50(3):777-801. 

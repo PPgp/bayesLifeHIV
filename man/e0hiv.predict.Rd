@@ -10,13 +10,14 @@ while taking into account future HIV/AIDS epidemics.
 }
 \usage{
 e0hiv.predict(mcmc.set = NULL, end.year = 2100, 
-    sim.dir = file.path(getwd(), "bayesLife.output"), replace.output = FALSE, 
-    predict.jmale = TRUE, nr.traj = NULL, thin = NULL, 
-    burnin = 10000, use.diagnostics = FALSE, 
+    sim.dir = file.path(getwd(), "bayesLifeHIV.output"), 
+    replace.output = FALSE, predict.jmale = TRUE, nr.traj = NULL, 
+    thin = NULL, burnin = 10000, use.diagnostics = FALSE, 
     hiv.countries = NULL, my.art.file = NULL, my.hivtraj.file = NULL,
     scale.hivtraj = FALSE, scale.hivtraj.tofile = NULL, 
     save.as.ascii = 1000, start.year = NULL, output.dir = NULL, 
-    low.memory = TRUE, seed = NULL, verbose = TRUE, \dots)
+    low.memory = TRUE, ignore.last.observed = FALSE, 
+    seed = NULL, verbose = TRUE, \dots)
 }
 
 \arguments{
@@ -39,6 +40,7 @@ e0hiv.predict(mcmc.set = NULL, end.year = 2100,
   \item{start.year}{This argument should be only used if the start year of the prediction is before or at the present year of the MCMC run (see Details below). By default the prediction starts in the next time period after the present year (passed to \code{\link{run.e0hiv.mcmc}}).}
   \item{output.dir}{Directory into which the resulting prediction object and the trajectories are stored. If it is \code{NULL}, it is set to either \code{sim.dir}, or to \code{output.dir} of \code{mcmc.set$meta} if \code{mcmc.set} is given.}
   \item{low.memory}{Logical indicating if the prediction should run in a low-memory mode. If it is \code{FALSE}, the whole traces of all parameters, including the burnin, are loaded into memory. Otherwise, burnins are discarded and parameters are loaded as they are needed and are not kept in the memory.}
+  \item{ignore.last.observed}{Logical. By default, the prediction (or imputation) for each country starts one time period after the last observed data point for that country defined by the \dQuote{last.observed} column in the data. If this argument is set to \code{TRUE}, the prediction ignores that \dQuote{last.observed} value and starts at the last data point found in the data. This allows to exclude some time periods from the estimation, but include them in the prediction.}
   \item{seed}{Seed of the random number generator. If \code{NULL} no seed is set. It can be used to generate reproducible projections.}
   \item{verbose}{Logical switching log messages on and off.}
   \item{\dots}{Additional arguments passed to the \code{\link[bayesLife]{e0.jmale.predict}} function.}
@@ -53,7 +55,7 @@ See \code{\link[bayesLife]{e0.predict}} for more details.
 	Object of class \code{\link[bayesLife]{bayesLife.prediction}}.
 }
 \references{
-Godwin, J. and Raftery, A.E. (2017): Bayesian projection of life expectancy accounting for the HIV/AIDS epidemic. Demographic Research 37(48):1549–1610.
+Godwin, J. and Raftery, A.E. (2017): Bayesian projection of life expectancy accounting for the HIV/AIDS epidemic. Demographic Research 37(48):1549-1610.
 
 J. L. Chunn, A. E. Raftery, P. Gerland, H. Sevcikova (2013): Bayesian Probabilistic Projections of Life Expectancy for All Countries. Demography 50(3):777-801. <doi:10.1007/s13524-012-0193-x>
 }
@@ -71,8 +73,8 @@ Hana Sevcikova, Jessica Godwin
 \dontrun{
 m <- run.e0hiv.mcmc(nr.chains = 1, iter = 50, thin = 1, verbose = TRUE)
 pred <- e0hiv.predict(m, burnin = 25, verbose = TRUE)
-summary(pred, country = "Botswana")}
-hiv.countries.pred(m$meta)
+summary(pred, country = "Botswana")
+hiv.countries.pred(m$meta)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

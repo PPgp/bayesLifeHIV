@@ -15,7 +15,7 @@ static const R_CMethodDef CEntries[] = {
     {NULL, NULL, 0}
 };
 
-void R_init_bayesLife(DllInfo *dll)
+void R_init_bayesLifeHIV(DllInfo *dll)
 {
     R_registerRoutines(dll, CEntries, NULL, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);

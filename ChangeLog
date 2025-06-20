@@ -1,4 +1,8 @@
-1.1-0.9xxx (2024-03-24)
+1.2-0 (2025-06-19)
+-----
+Annual HIV data updated to datasets used in WPP 2024. 
+
+1.1-0 (2024-03-24)
 -----
 Fixed loess for countries with e0 < 15.
 
