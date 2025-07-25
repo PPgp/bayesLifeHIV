@@ -2,7 +2,7 @@ do.e0.proj.hiv <- function(x, beta, l.start, kap, ndart.traj,
                            n.proj = 11, p1 = 9, p2 = 9, const.var = FALSE){
     proj <- c(l.start, rep(NA, n.proj))
     for(a in 2:(n.proj + 1)){
-        proj[a] <- (proj[a-1] + g.dl6(x, proj[a-1], p1 = p1, p2 = p2) + 
+        proj[a] <- (proj[a-1] + bayesLife:::g.dl6(x, proj[a-1], p1 = p1, p2 = p2) + 
                     beta*ndart.traj[a-1] +
                     rnorm(1, mean=0, sd=(kap*if(const.var) 1 else loess.lookup.hiv(proj[a-1], TRUE)))
                     )
@@ -60,6 +60,7 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
 }
 
 e0hiv.prediction.setup <- function(mcmc.set, ...) {
+    include_code <- hiv <- period <- country_code <- Trajectory <- NULL # to satisfy CRAN check
     convert.to.double <- function(dt) {
         fcols <- setdiff(colnames(dt)[sapply(dt, class) != "numeric"], "country_code")
         if(length(fcols) > 0)
@@ -92,7 +93,7 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
             scale.to <- NULL
             if(!is.null(setup$scale.hivtraj.tofile))
                 scale.to <- fread(setup$scale.hivtraj.tofile)
-            hiv.traj <- data.table(scale.hiv.trajectories(
+            hiv.traj <- data.table(e0hiv.scale.trajectories(
                             data.frame(hiv.traj, check.names = FALSE),
                             scale.to = data.frame(scale.to, check.names = FALSE),
                             annual = setup$meta$annual.simulation))
@@ -127,7 +128,7 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
     # keep only hiv countries
     hiv.art <- hiv.art[country_code %in% hiv.country.codes,]
     # convert back to wide format
-    nonartl <- hiv.art[ , .(country_code, Trajectory, year, nonart)]
+    nonartl <- hiv.art[ , list(country_code, Trajectory, year, nonart)]
     nonart <- dcast(nonartl, country_code + Trajectory ~ year, value.var = "nonart") # wide format
 
     # get a 3d array of the deltas

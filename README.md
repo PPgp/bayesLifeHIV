@@ -175,7 +175,7 @@ By default, countries considered as epidemic in the projection are those that ha
 
 We have scaled our original HIV trajectories so that the median for each country aligns with the values in the **HIVprevalence** dataset (columns corresponding to future time periods). The **HIVprevTrajectories** is a result of such scaling. 
 
-The scaling (which uses adjusted logit) is implemented in the function ``scale.hiv.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). Alternatively, it can be performed on the fly within the prediction function ``e0hiv.predict`` by setting the argument ``scale.hivtraj`` to ``TRUE``. Argument ``scale.hivtraj.tofile`` in ``e0hiv.predict`` can be used to pass the file name containing the dataset to be scaled to. The HIVprevalence dataset is used as the default.
+The scaling (which uses adjusted logit) is implemented in the function ``e0hiv.scale.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). Alternatively, it can be performed on the fly within the prediction function ``e0hiv.predict`` by setting the argument ``scale.hivtraj`` to ``TRUE``. Argument ``scale.hivtraj.tofile`` in ``e0hiv.predict`` can be used to pass the file name containing the dataset to be scaled to. The HIVprevalence dataset is used as the default.
 
 ### Note
 

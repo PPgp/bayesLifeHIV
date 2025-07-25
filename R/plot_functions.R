@@ -4,7 +4,7 @@ data(loess_sd, envir=environment(), package = "bayesLifeHIV")
 e0hiv.get.dlcurves <- function(x, mcmc.list, country.code, burnin, 
                                nr.curves = 2000, predictive.distr = FALSE) {
     add.errors <- isTRUE(mcmc.list[[1]]$meta$constant.variance) && predictive.distr
-    dlc <- bayesLife:::e0.get.dlcurves(x, mcmc.list, country.code, burnin, 
+    dlc <- bayesLife::e0.get.dlcurves(x, mcmc.list, country.code, burnin, 
                                        nr.curves = nr.curves, predictive.distr = add.errors)
     
     if(!predictive.distr || add.errors) return(dlc)

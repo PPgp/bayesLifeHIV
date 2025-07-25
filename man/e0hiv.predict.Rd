@@ -1,5 +1,6 @@
 \name{e0hiv.predict}
 \alias{e0hiv.predict}
+\alias{e0hiv.scale.trajectories}
 
 \title{
 Generating Posterior Trajectories of the Life Expectancy
@@ -18,6 +19,9 @@ e0hiv.predict(mcmc.set = NULL, end.year = 2100,
     save.as.ascii = 1000, start.year = NULL, output.dir = NULL, 
     low.memory = TRUE, ignore.last.observed = FALSE, 
     seed = NULL, verbose = TRUE, \dots)
+    
+e0hiv.scale.trajectories(trajectories = NULL, scale.to = NULL,
+    logit.adjust = 0.001, annual = FALSE)
 }
 
 \arguments{
@@ -34,7 +38,7 @@ e0hiv.predict(mcmc.set = NULL, end.year = 2100,
   \item{hiv.countries}{Codes of countries considered as epidemic in the projections. By default, countries are used that have \code{include_code = 3} in the \code{\link[bayesLife]{include}} dataset. All countries included in this argument have to have HIV prevalence and ART coverage projections available, either in the default \code{\link{HIVprevTrajectories}} and \code{\link{ARTcoverage}} datasets, or via the \code{my.art.file} and \code{my.hivtraj.file} arguments.}
   \item{my.art.file}{File name containing user-specified future values of ART coverage for countries with future epidemics. It should have the same format as the default \code{\link{ARTcoverage}} dataset.}
   \item{my.hivtraj.file}{File name containing probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have the same format as the default \code{\link{HIVprevTrajectories}} dataset.}
-  \item{scale.hivtraj}{Logical determining if the HIV trajectories should be scaled so that the median for each country aligns with the values in the \code{\link{HIVprevalence}} dataset (columns corresponding to future time periods). The scaling (which uses adjusted logit) is implemented in the function \code{\link{scale.hiv.trajectories}}.}
+  \item{scale.hivtraj}{Logical determining if the HIV trajectories should be scaled so that the median for each country aligns with the values in the \code{\link{HIVprevalence}} dataset (columns corresponding to future time periods). The scaling (which uses adjusted logit) is implemented in the function \code{e0hiv.scale.trajectories}.}
   \item{scale.hivtraj.tofile}{File name containing values to which the trajectories should be scaled to. It should have the same format as the \code{\link{HIVprevalence}} dataset.}
   \item{save.as.ascii}{Either a number determining how many trajectories should be converted into an ASCII file, or \dQuote{all} in which case all trajectories are converted. It should be set to 0, if no conversion is desired.}
   \item{start.year}{This argument should be only used if the start year of the prediction is before or at the present year of the MCMC run (see Details below). By default the prediction starts in the next time period after the present year (passed to \code{\link{run.e0hiv.mcmc}}).}
@@ -44,11 +48,17 @@ e0hiv.predict(mcmc.set = NULL, end.year = 2100,
   \item{seed}{Seed of the random number generator. If \code{NULL} no seed is set. It can be used to generate reproducible projections.}
   \item{verbose}{Logical switching log messages on and off.}
   \item{\dots}{Additional arguments passed to the \code{\link[bayesLife]{e0.jmale.predict}} function.}
+  \item{trajectories}{Data frame of trajectories to scale. It should have columns \dQuote{country_code}, \dQuote{Trajectory} and columns representing time, e.g. \dQuote{2025-2030}, \dQuote{2030-2035}, etc. for a five year simulation, or \dQuote{2025}, \dQuote{2026}, etc for an annual simulation. By default, \code{\link{HIVprevTrajectories}} or \code{\link{HIVprevTrajectories1y}} is used, depending on the argument \code{annual}.}
+  \item{scale.to}{Data frame to scale to. It should have a column \dQuote{country_code} and columns representing time as for the \code{trajectories} argument. By default, \code{\link{HIVprevalence}} or \code{\link{HIVprevalence1y}} is used, depending on the argument \code{annual}.}
+  \item{logit.adjust}{As the trajectories scaling is done via an adjusted logit, this argument is passed to the \code{\link[car]{logit}} function (argument \code{adjust}).}
+  \item{annual}{Logical determining if it is an annual dataset (\code{TRUE}) or a five-year dataset (\code{FALSE}).}
 }
 \details{
 Works similarly as the \code{\link[bayesLife]{e0.predict}} function of the \pkg{\link[bayesLife]{bayesLife}} package. For countries with future HIV epidemic, it uses trajectories of projected HIV prevelance as well as projected ART coverage to account for future HIV/AIDS epidemics, as described in Godwin and Raftery (2017).
 
 See \code{\link[bayesLife]{e0.predict}} for more details.
+
+Function \code{e0hiv.scale.trajectories} scales the given trajectories (via adjusted logit), so that the median for each country aligns with the values in the \code{scale.to} dataset. The function is automatically invoked during the prediction, if \code{scale.hivtraj} is set to \code{TRUE}, but one can also use it explicitely.
 
 }
 \value{
@@ -71,10 +81,14 @@ Hana Sevcikova, Jessica Godwin
 }
 \examples{
 \dontrun{
-m <- run.e0hiv.mcmc(nr.chains = 1, iter = 50, thin = 1, verbose = TRUE)
+sim.dir <- tempfile()
+m <- run.e0hiv.mcmc(nr.chains = 1, iter = 50, thin = 1, 
+  output.dir = sim.dir, verbose = TRUE)
 pred <- e0hiv.predict(m, burnin = 25, verbose = TRUE)
 summary(pred, country = "Botswana")
-hiv.countries.pred(m$meta)}
+hiv.countries.pred(m$meta)
+
+unlink(sim.dir, recursive=TRUE)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

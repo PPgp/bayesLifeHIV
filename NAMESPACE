@@ -1,10 +1,13 @@
 
 # import
 import(
-    wpp2019, data.table
+    wpp2019, data.table, bayesLife, coda, hett, bayesTFR
 )
 importFrom(car, logit)
-
+importFrom("stats", "median", "na.omit", "optimise", "quantile",
+            "rnorm", "splinefun")
+importFrom("utils", "data")
+  
 #exportPattern("^[[:alpha:]]+")
 useDynLib(bayesLifeHIV, .registration = TRUE)
 
@@ -14,7 +17,7 @@ export(
 	e0hiv.predict,
 	compute.hiv.loess,
 	compute.hiv.residuals,
-	scale.hiv.trajectories,
+	e0hiv.scale.trajectories,
 	hiv.countries.pred,
 	hiv.countries.est,
 	e0hiv.meta.ini,

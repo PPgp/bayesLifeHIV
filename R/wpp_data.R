@@ -1,4 +1,4 @@
-scale.hiv.trajectories <- function(trajectories = NULL, scale.to = NULL,
+e0hiv.scale.trajectories <- function(trajectories = NULL, scale.to = NULL,
                                    logit.adjust = 0.001, annual = FALSE) {
     # Scale given trajectories to a data frame given by scale.to.
     # scale.to should have a column country_code. Other columns should 

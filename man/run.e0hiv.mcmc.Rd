@@ -36,7 +36,7 @@ The function implements the Godwin and Raftery (2017) methodology which is an ex
 
 The function \code{run.e0hiv.mcmc} uses a set of global options (for priors, initial values etc.), possibly modified by the \code{mcmc.options} argument. One can also modify these options using \code{\link{e0mcmc.options}}. Call \code{using.bayesLifeHIV(); e0mcmc.options()} for the full set of options. 
 
-See \code{\link[bayesLife]{run.e0.mmc}} for more details. 
+See \code{\link[bayesLife]{run.e0.mcmc}} for more details. 
 }
 
 \value{
@@ -56,7 +56,7 @@ Hana Sevcikova, Jessica Godwin
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link[bayesLife]{run.e0.mmc}},
+\code{\link[bayesLife]{run.e0.mcmc}},
 \code{\link[bayesLife]{get.e0.mcmc}}, \code{\link[bayesLife]{summary.bayesLife.mcmc.set}}, \code{\link[bayesLife]{e0mcmc.options}}, \code{\link{e0hiv.predict}}.
 }
 \examples{

@@ -28,6 +28,7 @@ read.e0.data.file <- function(dataset){
 }
 
 e0hiv.meta.ini <- function(meta) {
+    include_code <- period <- country_code <- hiv.est <- NULL # to satisfy CRAN check
     convert.to.double <- function(dt) {
         fcols <- setdiff(colnames(dt)[sapply(dt, class) != "numeric"], "country_code")
         if(length(fcols) > 0)
@@ -68,7 +69,7 @@ e0hiv.meta.ini <- function(meta) {
 
     # match years with e0 matrix and convert back to a wide format
     hiv.art <- hiv.art[year %in% rownames(meta$e0.matrix), ]
-    nonartl <- hiv.art[ , .(country_code, year, nonart)]
+    nonartl <- hiv.art[ , list(country_code, year, nonart)]
     nonart <- dcast(nonartl, country_code ~ year, value.var = "nonart") # wide format
     rownames(nonart) <- nonart$country_code
     nonart[, country_code := NULL]
