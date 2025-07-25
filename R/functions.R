@@ -1,4 +1,4 @@
-if(getRversion() >= "2.15.1") utils::globalVariables("loess.sd")
+#if(getRversion() >= "2.15.1") utils::globalVariables("loess.sd")
 
 
 loess.lookup.hiv <- function(look, is.hiv) {

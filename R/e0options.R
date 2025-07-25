@@ -35,7 +35,6 @@ e0hiv.mcmc1y.options.default <- function() {
     })
 }
 
-
 using.bayesLifeHIV <- function() {
     # overwrite bayesLife options with the HIV ones
     opt.default <- e0hiv.options.default()
@@ -43,4 +42,3 @@ using.bayesLifeHIV <- function() {
         bayesLife:::e0.options(item, opt.default[[item]])
 }
 
-using.bayesLifeHIV()

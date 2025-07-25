@@ -10,4 +10,15 @@ Depends: R (>= 3.5.0), bayesLife (>= 4.0-2), bayesTFR
 Imports: wpp2019, hett, car, coda, data.table
 License: GPL (>= 2)
 URL: https://bayespop.csss.washington.edu
-
+Collate:
+    e0options.R
+    globals.R
+    diagnostics.R
+    functions.R
+    get_outputs.R
+    mcmc_estimate.R
+    plot_functions.R
+    projection_fcns.R
+    run_mcmc.R
+    wpp_data.R
+    zzz.R

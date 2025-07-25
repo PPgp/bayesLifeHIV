@@ -1,5 +1,5 @@
-if(getRversion() >= "2.15.1") utils::globalVariables(c("loess_sd"))
-data(loess_sd, envir = environment(), package = "bayesLifeHIV")
+#if(getRversion() >= "2.15.1") utils::globalVariables(c("loess_sd"))
+#data(loess_sd, envir = environment(), package = "bayesLifeHIV")
 
 run.e0hiv.mcmc <- function(sex = c("Female", "Male"), nr.chains = 3, iter = 160000, 
 							output.dir = file.path(getwd(), 'bayesLifeHIV.output'), 

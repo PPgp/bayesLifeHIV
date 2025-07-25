@@ -1,5 +1,5 @@
-if(getRversion() >= "2.15.1") utils::globalVariables("loess_sd")
-data(loess_sd, envir=environment(), package = "bayesLifeHIV")
+#if(getRversion() >= "2.15.1") utils::globalVariables("loess_sd")
+#data(loess_sd, envir=environment(), package = "bayesLifeHIV")
 
 e0hiv.get.dlcurves <- function(x, mcmc.list, country.code, burnin, 
                                nr.curves = 2000, predictive.distr = FALSE) {
