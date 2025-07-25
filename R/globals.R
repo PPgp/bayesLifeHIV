@@ -1,0 +1,5 @@
+if(getRversion() >= "2.15.1") utils::globalVariables("loess.sd")
+data(loess_sd, envir = environment(), package = "bayesLifeHIV")
+using.bayesLifeHIV()
+bayesLifeHIVenv <- new.env(parent = emptyenv())
+assign("e0hivoptions",  e0options(), envir = bayesLifeHIVenv)

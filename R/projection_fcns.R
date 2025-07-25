@@ -28,7 +28,7 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
                        my.art.file = NULL, my.hivtraj.file = NULL, 
                        scale.hivtraj = FALSE, scale.hivtraj.tofile = NULL,
                        save.as.ascii = 1000, 
-                       start.year = NULL, output.dir = NULL, 
+                       start.year = NULL, output.dir = NULL, subdir = "predictions", 
                        low.memory = TRUE, ignore.last.observed = FALSE,
                        seed = NULL, verbose = TRUE, ...){
 	if(!is.null(mcmc.set)) {
@@ -50,7 +50,7 @@ e0hiv.predict <- function(mcmc.set = NULL, end.year = 2100,
 	pred <- make.e0hiv.prediction(mcmc.set, end.year = end.year, replace.output = replace.output,  
 					nr.traj = nr.traj, thin = thin, burnin = burnin, hiv.countries = hiv.countries, 
 					save.as.ascii = save.as.ascii, start.year = start.year,
-					output.dir = output.dir, my.art.file = my.art.file, 
+					output.dir = output.dir, subdir = subdir, my.art.file = my.art.file, 
 					my.hivtraj.file = my.hivtraj.file, scale.hivtraj = scale.hivtraj,
 					scale.hivtraj.tofile = scale.hivtraj.tofile, ignore.last.observed = ignore.last.observed,
 					verbose = verbose)
