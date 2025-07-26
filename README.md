@@ -46,14 +46,15 @@ m <- run.e0hiv.mcmc(nr.chains = 2, iter = 50, thin = 1,
 			verbose = TRUE)
 
 ```
-The function above estimates MCMCs for ALL countries, non-epidemic as  well as epidemic. 
+The function above estimates MCMCs for ALL countries, non-epidemic as  well as epidemic. Argument ``annual`` can be set to ``TRUE`` if this should be an estimation on annual data (available for ``wpp.year`` >= 2022).
+
 Countries considered as epidemic in the estimation can be viewed via
 
 ```
 hiv.countries.est(m$meta)
 ```
 
-Summaries, DL curves etc. can be viewed as with ususal **bayesLife** objects, see ``?bayesLife``. E.g. 
+Summaries, DL curves etc. can be viewed as with usual **bayesLife** objects, see ``?bayesLife``. E.g. 
 
 ```
 e0.partraces.plot(m)
@@ -127,28 +128,33 @@ The difference is that this time the global options were not changed, see ``e0mc
 
 ### Required Datasets
 
-The package requires three additional datasets that are beyond of what is needed in **bayesLife**. Currently, they are included in the package in  the ``data`` directory. 
-All files are tab delimited, with the suffix ".txt"
+The package requires three additional datasets that are beyond of what is needed in **bayesLife**. Currently, there are two versions of these three datasets included in the package, one for a 5-year simulation (``annual = FALSE``, default) and one for an annual simulation (``annual = TRUE``). The latter (have "1y" at the end of their respective names) are newer - used for WPP 2024. Which version is used by default
+depends on the value of the ``annual`` argument. 
+
+When creating those datasets, they should all be tab delimited. 
  
 #### Estimation
 
-  * **HIVprevalence**: contains historical and projected HIV prevalence for countries with past or/and future epidemics. Currently it has 58 rows and 29 columns, corresponding to 58 countries and time periods from 1970 to 2100 (note that columns for future years are only used for scaling, see below). It has also a column "include\_code". Only countries are considered as epidemic in the estimation, if their "include\_code" is 1. View the dataset via
+  * **HIVprevalence**, **HIVprevalence1y**: contain historical and projected HIV prevalence for countries with past or/and future epidemics. Rows correspond to countries; columns correspond to time periods, spanning from 1970 to 2100
+  (note that columns for future years are only used for scaling, see below). It can also have a column "include\_code". Only countries are considered as epidemic in the estimation, if their "include\_code" is 1. View the datasets via
   
     ```
-    data(HIVprevalence)
-    head(HIVprevalence)
+    data(HIVprevalence, HIVprevalence1y)
+    head(HIVprevalence)   # 5-year data
+    head(HIVprevalence1y) # annual data
     ```
-    The dataset can be overwritten by passing the name of the new file as the argument ``my.hiv.file`` in the ``run.e0hiv.mcmc()`` function.
+    The default dataset can be overwritten by passing the name of the new file as the argument ``my.hiv.file`` in the ``run.e0hiv.mcmc()`` function.
     
-  * **ARTcoverage**: contains historical and projected values of ART coverage for countries with past or/and future epidemics. It has the same structure as HIVprevalence, including the "include\_code" column. Countries considered as epidemic must have their "include\_code" set to 1 in both datasets, HIVprevalence and ARTcoverage. By default, all 58 countries are considered as epidemic. Note that in the estimation, only columns for historical time periods are used, while future time periods are used in the projections. View the dataset via
+  * **ARTcoverage**, **ARTcoverage1y**: contain historical and projected values of ART coverage for countries with past or/and future epidemics. It has the same structure as HIVprevalence(1y), including the optional "include\_code" column. If the column is present, countries considered as epidemic must have their "include\_code" set to 1 in both datasets, HIVprevalence(1y) and ARTcoverage(1y). If the "include\_code" column is missing, all countries included in these files are considered as epidemic. Note that in the estimation, only columns for historical time periods are used, while future time periods of ARTcoverage(1y) are used in the projections. View the dataset via
   
     ```
-    data(ARTcoverage)
-    head(ARTcoverage)
+    data(ARTcoverage, ARTcoverage1y)
+    head(ARTcoverage)    # 5-year data
+    head(ARTcoverage1y)  # annual data
     ```
-    The dataset can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``run.e0hiv.mcmc()`` function.
+    The default dataset can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``run.e0hiv.mcmc()`` function.
 
-During the estimation, these two datasets are merged and converted into a delta(nonART) dataset, which is delta(hiv * (100 - art)/100), containing all countries. It can be accessed from an mcmc object, e.g. for an object ``m``:
+During the estimation, the HIV prevalence and ART coverage datasets are merged and converted into a delta(nonART) dataset, which is delta(hiv * (100 - art)/100), containing all countries. It can be accessed from an mcmc object, e.g. for an object ``m``:
 
 ```
 m$meta$dlt.nart[, 1:10]
@@ -156,20 +162,30 @@ m$meta$dlt.nart[, 1:10]
 
 #### Projections
 
-  * **ARTcoverage**: as mentioned above, columns that correspond to future years are used in the projections. The dataset is again filtered using the "include\_code" column. The default ``ARTcoverage`` can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``e0hiv.predict()`` function.
+  * **ARTcoverage**, **ARTcoverage1y**: as mentioned above, columns that correspond to future years are used in the projections. The dataset is again filtered using the "include\_code" column, if available. The default ARTcoverage(1y) can be overwritten by passing the name of the new file as the argument ``my.art.file`` in the ``e0hiv.predict()`` function.
 
-  * **HIVprevTrajectories**: these are probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have columns "country\_code", "Trajectory", and time periods "2010-2015", ..., "2095-2100". The default dataset contains 1000 trajectories for 58 countries (scaled to the HIVprevalence dataset, see below), thus resulting in a dimension of 58,000 x 20. View the dataset by 
+  * **HIVprevTrajectories**, **HIVprevTrajectories1y**: these are probabilistic trajectories of HIV prevalence for countries considered as epidemic in the future. It should have columns "country\_code", "Trajectory", and time periods "2010-2015", ..., "2095-2100" (for the 5-year version) or "2010", "2011" ,..., "2100" (for the annual version). The default dataset contains 1000 trajectories for the countries that are epidemic (scaled to the HIVprevalence(1y) dataset, see below). View the dataset by 
   
     ```
-    data(HIVprevTrajectories)
+    data(HIVprevTrajectories, HIVprevTrajectories1y)
     head(HIVprevTrajectories)
+    head(HIVprevTrajectories1y)
     ``` 
-    The dataset can be overwritten by passing the name of the new file as the argument ``my.hivtraj.file`` in the ``e0hiv.predict()`` function. It has to have the same format as the default dataset. If scaling to the HIVprevalence dataset is desired on the user-defined data, set the argument ``scale.hivtraj`` to ``TRUE``.
+    The default dataset can be overwritten by passing the name of the new file as the argument ``my.hivtraj.file`` in the ``e0hiv.predict()`` function. It has to have the same format as the default dataset. If scaling to the HIVprevalence(1y) dataset is desired on the user-defined data, set the argument ``scale.hivtraj`` to ``TRUE``.
     
     
-Similarly to the estimation, these two datasets are merged and converted into a dataset of delta(nonART) trajectories, which are then used in the prediction step.
+Similarly to the estimation, the HIV and ART datasets are merged and converted into a dataset of delta(nonART) trajectories, which are then used in the prediction step.
 
-By default, countries considered as epidemic in the projection are those that have "include\_code" set to 3 in the ``include_{wpp}`` dataset in the **bayesLife** package. This can be overwritten by the argument ``hiv.countries`` in ``e0hiv.predict()``, which should be a vector of country codes. However, in both cases, such countries are required to have records in both, the ARTcoverage and HIVprevTrajectories datasets.
+By default, countries considered as epidemic in the projection are those that have "include\_code" set to 3 in the ``include_{wpp}`` dataset in the **bayesLife** package. This can be overwritten by the argument ``hiv.countries`` in ``e0hiv.predict()``, which should be a vector of country codes. However, in both cases, such countries are required to have records in both, the ARTcoverage(1y) and HIVprevTrajectories(1y) datasets.
+
+To view countries considered as epidemic in the projection in WPP 2024, one can do
+
+```
+data(include_2024, package = "bayesLife")
+data(ARTcoverage1y, package = "bayesLifeHIV")
+merge(subset(include_2024, include_code == 3), 
+      ARTcoverage1y[, c("country_code", "name")])
+```
 
 ##### Trajectories Scaling 
 
@@ -177,9 +193,6 @@ We have scaled our original HIV trajectories so that the median for each country
 
 The scaling (which uses adjusted logit) is implemented in the function ``e0hiv.scale.trajectories()``. One can pass a dataset of trajectories (in the same format as HIVprevTrajectories) and a dataset of one time series per country (in the same format as HIVprevalence). Alternatively, it can be performed on the fly within the prediction function ``e0hiv.predict`` by setting the argument ``scale.hivtraj`` to ``TRUE``. Argument ``scale.hivtraj.tofile`` in ``e0hiv.predict`` can be used to pass the file name containing the dataset to be scaled to. The HIVprevalence dataset is used as the default.
 
-### Note
-
-This package is still under construction, especially the documentation needs some more work. We apologize for the inconvenience. 
 
 ### References
 

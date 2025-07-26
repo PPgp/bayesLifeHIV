@@ -28,13 +28,13 @@ run.e0hiv.mcmc(sex = c("Female", "Male"), nr.chains = 3, iter = 160000,
   \item{wpp.year}{Year for which WPP data is used. The functions loads a package called \pkg{wpp}\eqn{x} where \eqn{x} is the \code{wpp.year} and uses the \code{\link[wpp2019]{e0}*} datasets.}
   \item{my.hiv.file}{File name containing user-specified historical HIV prevalence for countries with past epidemics. It should have the same format as the default \code{\link{HIVprevalence}} dataset. Only countries are considered as epidemic in the estimation, if their \dQuote{include_code} column is 1.}
   \item{my.art.file}{File name containing user-specified historical values of ART coverage for countries with past epidemics. It has the same format as \code{my.hiv.file}. If not given, the default dataset, \code{\link{ARTcoverage}}, is used.}
-  \item{mcmc.options}{List of options that overwrites global MCMC options as defined in \code{\link{e0mcmc.options}}. Type \code{using.bayesLifeHIV(); e0mcmc.options()} to view default values.}
+  \item{mcmc.options}{List of options that overwrites global MCMC options as defined in \code{\link[bayesLife]{e0mcmc.options}}. Type \code{using.bayesLifeHIV(); e0mcmc.options()} to view default values.}
   \item{\dots}{Additional parameters to be passed to \code{\link[bayesLife]{run.e0.mcmc}}.}
 }
 \details{
 The function implements the Godwin and Raftery (2017) methodology which is an extension of the Chunn et al. (2013) model implemented in \code{\link[bayesLife]{run.e0.mcmc}} of the \pkg{\link[bayesLife]{bayesLife}} package. By default, the \code{\link[bayesLife]{run.e0.mcmc}} function does not include HIV/AIDS countries in the estimation. In fact, in \pkg{\link[bayesLife]{bayesLife}} they have to be treated as \dQuote{extra} countries (using the function \code{\link[bayesLife]{run.e0.mcmc.extra}}) in order to generate projections for the epidemic countries. The \code{run.e0hiv.mcmc} function uses ALL countries in the estimation, so no extra step is needed to generate projections of life expectancy for all countries of the world, and no need to run \pkg{\link[bayesLife]{bayesLife}} separately.
 
-The function \code{run.e0hiv.mcmc} uses a set of global options (for priors, initial values etc.), possibly modified by the \code{mcmc.options} argument. One can also modify these options using \code{\link{e0mcmc.options}}. Call \code{using.bayesLifeHIV(); e0mcmc.options()} for the full set of options. 
+The function \code{run.e0hiv.mcmc} uses a set of global options (for priors, initial values etc.), possibly modified by the \code{mcmc.options} argument. One can also modify these options using \code{\link[bayesLife]{e0mcmc.options}}. Call \code{using.bayesLifeHIV(); e0mcmc.options()} for the full set of options. 
 
 See \code{\link[bayesLife]{run.e0.mcmc}} for more details. 
 }
