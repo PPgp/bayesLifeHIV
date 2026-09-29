@@ -11,6 +11,7 @@ e0hiv.mcmc.sampling <- function(mcmc, thin = 1, start.iter = 2, verbose = FALSE,
 	
 	ctrlenv <- bayesLife:::create.ctrl.env(mcenv, meta)
 	ctrlenv$DLdata <- get.DLdata.for.hiv.estimation(meta, 1:ctrlenv$C)
+	ctrlenv$cs.data <- bayesLife:::get.cs.data.for.update(meta, ctrlenv$DLdata, 1:ctrlenv$C)
 	
 	ctrlenv <- within(ctrlenv, {
 	    X <- as.vector(t(meta$dlt.nart))
@@ -49,6 +50,7 @@ e0hiv.mcmc.sampling <- function(mcmc, thin = 1, start.iter = 2, verbose = FALSE,
             for(country in 1:C){
 			    new <- DLdata[[country]]['observed.dct',DLdata[[country]]['post1950',]==1]-mcenv$betanonART*meta$dlt.nart[colnames(DLdata[[country]])[DLdata[[country]]['post1950',]==1],country]
 			    DLdata[[country]]['dct',DLdata[[country]]['post1950',]==1] <- as.numeric(new)
+			    cs.data[[country]]$dct <- as.double(DLdata[[country]]['dct',])
 			}	
 		})
 		# write samples simu/thin to disk

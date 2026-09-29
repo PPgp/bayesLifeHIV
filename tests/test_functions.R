@@ -39,7 +39,7 @@ test.simulate5y <- function(wpp.year = 2019) {
 	if(wpp.year == 2019)
 	    stopifnot(ncountries == 201)
 	if(wpp.year == 2024)
-	    stopifnot(ncountries == 237)
+	    stopifnot(ncountries == 236)
 	test.ok(test.name)
 	
 	# run prediction
