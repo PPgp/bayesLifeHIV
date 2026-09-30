@@ -23,6 +23,38 @@ test.options <- function(){
     test.ok(test.name)
 }
 
+test.hiv.data.in.sampler <- function(wpp.year = 2019) {
+    # bayesLife's update.mcmc.parameters samples the country-specific parameters and omega
+    # from ctrlenv$cs.data. Check that it gets the HIV-adjusted dct
+    # (observed.dct - betanonART*dlt.nart) in every iteration, not the plain d.ct.
+    test.name <- 'passing HIV-adjusted data to the sampler'
+    start.test(test.name, wpp.year)
+    res <- new.env()
+    res$in.sync <- res$max.adj <- c()
+    trace(bayesLife:::update.mcmc.parameters, where = asNamespace("bayesLife"), print = FALSE,
+          tracer = bquote({ # the tracer runs in the frame of update.mcmc.parameters, so pass res in
+              res <- .(res)
+              C <- ctrlenv$C
+              if(is.null(res$plain))
+                  res$plain <- bayesLife:::get.DLdata.for.estimation(mcenv$meta, 1:C)
+              res$in.sync <- c(res$in.sync, all(sapply(1:C, function(i)
+                  isTRUE(all.equal(ctrlenv$cs.data[[i]]$dct, as.double(ctrlenv$DLdata[[i]]['dct',]))))))
+              res$max.adj <- c(res$max.adj, max(sapply(1:C, function(i)
+                  max(abs(ctrlenv$cs.data[[i]]$dct - res$plain[[i]]['dct',])))))
+          }))
+    on.exit(untrace(bayesLife:::update.mcmc.parameters, where = asNamespace("bayesLife")))
+    sim.dir <- tempfile()
+    m <- run.e0hiv.mcmc(nr.chains = 1, iter = 5, thin = 1, output.dir = sim.dir,
+                        wpp.year = wpp.year, verbose = FALSE)
+    stopifnot(length(res$in.sync) == 4)
+    stopifnot(all(res$in.sync))
+    # the first iteration starts from the unadjusted data; afterwards the HIV adjustment must be there
+    stopifnot(res$max.adj[1] == 0)
+    stopifnot(all(res$max.adj[-1] > 0))
+    unlink(sim.dir, recursive=TRUE)
+    test.ok(test.name)
+}
+
 test.simulate5y <- function(wpp.year = 2019) {
 	sim.dir <- tempfile()
     # run MCMC

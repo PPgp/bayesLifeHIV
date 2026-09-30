@@ -1,8 +1,8 @@
 Package: bayesLifeHIV
 Type: Package
 Title: Bayesian Projection of Life Expectancy with HIV
-Version: 1.3-0
-Date: 2025-07-25
+Version: 1.3-0.9001
+Date: 2026-09-30
 Author: Hana Sevcikova, Jessica Godwin, Adrian Raftery
 Maintainer: Hana Sevcikova <hanas@uw.edu>
 Description: Making probabilistic projections of life expectancy for all countries of the world, using a Bayesian hierarchical model <doi:10.1007/s13524-012-0193-x>.
