@@ -1,13 +1,18 @@
-1.3-0.9002 (2026-10-01)
+1.3-0.9003 (2026-10-01)
 -----
+Fixed error variance in the Gibbs update of betanonART: it is now (omega*loessSD)^2
+as in the model, instead of omega^2*loessSD.
+
 Speed-up of e0hiv.predict: trajectories of a country are generated for all samples 
 at once (requires bayesLife >= 5.3-2.9002). Results are unchanged for a given seed.
+
+Fixed a bug in defining countries with HIV.
+
+Changed how trajectories are aligned with the HIV trajectories.
 
 Speed-up of MCMC: the betanonART update no longer builds diagonal matrices of the size 
 of the data. loess.lookup.hiv vectorized. Results are unchanged for a given seed.
 
-1.3-0.9001 (2026-09-30)
------
 Adapted MCMC to bayesLife >= 5.3-2.9001, where country-specific parameters 
 and omega are updated from pre-computed data (cs.data). The HIV-adjusted 
 data are now passed to the sampler in every iteration.
