@@ -35,7 +35,7 @@ generate.e0hiv.trajectories <- function(..., traj, pred.env) {
     ccode <- as.character(pred.env$country.obj$code)
     if(pred.env$country.obj$index %in% pred.env$hiv.country.idx) 
         return(do.e0.proj.hiv.multi(..., beta = pred.env$var.beta[traj, 1], 
-                                    ndart.trajs = matrix(pred.env$ndart.trajs[ccode, traj, ], nrow = length(traj))))
+                                    ndart.trajs = matrix(pred.env$ndart.trajs[ccode, pred.env$hiv.traj.idx[traj], ], nrow = length(traj))))
     # non-HIV projections
     return(bayesLife:::generate.e0.trajectories(...))
 }
@@ -44,7 +44,7 @@ generate.e0hiv.trajectory <- function(..., traj, pred.env) {
     ccode <- as.character(pred.env$country.obj$code)
     if(pred.env$country.obj$index %in% pred.env$hiv.country.idx) 
         return(do.e0.proj.hiv(..., beta = pred.env$var.beta[traj,], 
-                              ndart.traj = pred.env$ndart.trajs[ccode, traj,]))
+                              ndart.traj = pred.env$ndart.trajs[ccode, pred.env$hiv.traj.idx[traj], ]))
     # non-HIV projections
     return(bayesLife:::generate.e0.trajectory(...))
 }
@@ -173,8 +173,11 @@ e0hiv.prediction.setup <- function(mcmc.set, ...) {
         nondart.trajs[as.character(cntry),, mid.years.minus1] <- tr[, 2:ncol(tr)] - tr[, 1:(ncol(tr)-1)]
     }
     setup$pred.env$ndart.trajs <- nondart.trajs
-    setup$pred.env$hiv.traj.idx <- sample(1:nr.hiv.traj, setup$nr_simu, replace=TRUE)
+    # pair each projection trajectory with a randomly selected HIV trajectory
+    # (each used at most once if there are enough of them)
+    setup$pred.env$hiv.traj.idx <- sample(nr.hiv.traj, setup$nr_simu, replace = setup$nr_simu > nr.hiv.traj)
     setup$pred.env$var.beta <- var.beta
+    setup$pred.env$hiv.country.idx <- hiv.country.idx
     setup$hiv.country.codes <- hiv.country.codes
     return(setup)
 }

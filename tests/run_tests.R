@@ -7,6 +7,7 @@ wpp <- 2019
 test.options()
 test.hiv.data.in.sampler(wpp.year = wpp)
 test.vectorized.trajectories()
+test.few.hiv.trajectories(wpp.year = wpp)
 if(cran)
     test.simulate5y(wpp.year = wpp)
 

@@ -90,6 +90,28 @@ test.vectorized.trajectories <- function() {
     test.ok(test.name)
 }
 
+test.few.hiv.trajectories <- function(wpp.year = 2019) {
+    # Projections with more trajectories than available HIV trajectories 
+    # must sample HIV trajectories with replacement.
+    test.name <- 'projections with few HIV trajectories'
+    start.test(test.name, wpp.year)
+    sim.dir <- tempfile()
+    m <- run.e0hiv.mcmc(nr.chains = 1, iter = 20, thin = 1, output.dir = sim.dir, 
+                        wpp.year = wpp.year, verbose = FALSE)
+    e <- new.env()
+    data("HIVprevTrajectories", envir = e)
+    hivtraj <- e$HIVprevTrajectories
+    hivtraj.file <- tempfile(fileext = ".csv")
+    data.table::fwrite(hivtraj[hivtraj$Trajectory <= 5, ], hivtraj.file)
+    pred <- e0hiv.predict(m, burnin = 0, nr.traj = 20, my.hivtraj.file = hivtraj.file, 
+                          predict.jmale = FALSE, verbose = FALSE)
+    stopifnot(summary(pred)$nr.traj == 20)
+    trajs <- get.e0.trajectories(pred, "Botswana")
+    stopifnot(ncol(trajs) == 20 && !any(is.na(trajs)))
+    unlink(c(sim.dir, hivtraj.file), recursive = TRUE)
+    test.ok(test.name)
+}
+
 test.simulate5y <- function(wpp.year = 2019) {
 	sim.dir <- tempfile()
     # run MCMC
