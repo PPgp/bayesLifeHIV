@@ -1,6 +1,7 @@
 # bayesLifeHIV
 
-[![R Build Status](https://github.com/PPgp/bayesLifeHIV/workflows/R-CMD-check/badge.svg)](https://github.com/PPgp/bayesLifeHIV/actions?workflow=R-CMD-check)
+[![R-CMD-check](https://github.com/PPgp/bayesLifeHIV/actions/workflows/check-standard.yaml/badge.svg?branch=master&event=push)](https://github.com/PPgp/bayesLifeHIV/actions/workflows/check-standard.yaml)
+
 
 Extension of the **bayesLife** R package that takes into account HIV/AIDS, as described in Godwin and Raftery (2017). It requires **bayesLife** version 4.0-2 or higher.
 
