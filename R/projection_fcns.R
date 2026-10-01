@@ -10,6 +10,36 @@ do.e0.proj.hiv <- function(x, beta, l.start, kap, ndart.traj,
     return(proj[-1])
 }
 
+do.e0.proj.hiv.multi <- function(x, beta, l.start, kap, ndart.trajs, 
+                                 n.proj = 11, p1 = 9, p2 = 9, const.var = FALSE){
+    # Vectorized version of do.e0.proj.hiv: one trajectory for each row of x 
+    # (beta and kap are vectors, ndart.trajs is a matrix with one row per trajectory).
+    # Random deviates are drawn in the same order as when calling do.e0.proj.hiv
+    # for each row in turn, so both give the same results for the same seed.
+    nr.traj <- nrow(x)
+    if(ncol(ndart.trajs) < n.proj) 
+        stop("HIV trajectories available for ", ncol(ndart.trajs), " time periods but ", n.proj, " needed.")
+    eps <- matrix(rnorm(n.proj * nr.traj), nrow = n.proj)
+    proj <- matrix(NA, nrow = n.proj + 1, ncol = nr.traj)
+    proj[1, ] <- l.start
+    for(a in 2:(n.proj + 1)){
+        sd <- kap*if(const.var) 1 else loess.lookup.hiv(proj[a-1, ], TRUE)
+        proj[a, ] <- proj[a-1, ] + bayesLife:::g.dl6.multi(x, proj[a-1, ], p1 = p1, p2 = p2) + 
+                        beta*ndart.trajs[, a-1] + sd * eps[a-1, ]
+    }
+    return(proj[-1, , drop = FALSE])
+}
+
+generate.e0hiv.trajectories <- function(..., traj, pred.env) {
+    # Generates all trajectories of a country at once (see generate.e0hiv.trajectory)
+    ccode <- as.character(pred.env$country.obj$code)
+    if(pred.env$country.obj$index %in% pred.env$hiv.country.idx) 
+        return(do.e0.proj.hiv.multi(..., beta = pred.env$var.beta[traj, 1], 
+                                    ndart.trajs = matrix(pred.env$ndart.trajs[ccode, traj, ], nrow = length(traj))))
+    # non-HIV projections
+    return(bayesLife:::generate.e0.trajectories(...))
+}
+
 generate.e0hiv.trajectory <- function(..., traj, pred.env) {
     ccode <- as.character(pred.env$country.obj$code)
     if(pred.env$country.obj$index %in% pred.env$hiv.country.idx) 
@@ -154,7 +184,8 @@ make.e0hiv.prediction <- function(mcmc.set, pred.options = NULL, ...){
     if(!is.null(pred.options))
         e0pred.options(pred.options)
     setup <- e0hiv.prediction.setup(mcmc.set, ...)
-    pred <- bayesLife:::run.e0.projection.for.all.countries(setup, traj.fun = "generate.e0hiv.trajectory")
+    pred <- bayesLife:::run.e0.projection.for.all.countries(setup, traj.fun = "generate.e0hiv.trajectory",
+                                                        trajs.fun = generate.e0hiv.trajectories)
     pred$hiv.country.codes <- setup$hiv.country.codes
     bayesLife:::write.to.disk.prediction(pred, setup)
 	invisible(pred)

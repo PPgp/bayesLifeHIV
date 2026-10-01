@@ -2,13 +2,16 @@
 
 
 loess.lookup.hiv <- function(look, is.hiv) {
-    find.look <- function(value, hiv) {
+    is.hiv <- rep_len(is.hiv, length(look))
+    res <- rep(NA_real_, length(look))
+    for(hiv in unique(is.hiv)) {
         look.in <- if(hiv) loess.sd$hiv else loess.sd
-        idx <- cut(value, look.in$x, labels=FALSE, include.lowest = TRUE)
-        if(is.na(idx) && value < min(look.in$x)) idx <- 1
-        look.in$y[idx]
+        sel <- which(is.hiv == hiv)
+        idx <- cut(look[sel], look.in$x, labels=FALSE, include.lowest = TRUE)
+        idx[which(is.na(idx) & look[sel] < min(look.in$x))] <- 1
+        res[sel] <- look.in$y[idx]
     }
-    mapply(find.look, look, is.hiv)
+    res
 }
 
 compute.hiv.residuals <- function(sim.dir, burnin = 1000) {

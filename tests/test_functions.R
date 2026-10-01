@@ -55,6 +55,41 @@ test.hiv.data.in.sampler <- function(wpp.year = 2019) {
     test.ok(test.name)
 }
 
+test.vectorized.trajectories <- function() {
+    # The vectorized trajectory generator must give the same results 
+    # as calling the per-trajectory one for each trajectory in turn.
+    test.name <- 'vectorized HIV trajectories'
+    start.test(test.name)
+    ntraj <- 50
+    nproj <- 16
+    x <- cbind(matrix(runif(ntraj*4, 10, 20), ncol = 4), runif(ntraj, 2, 4), runif(ntraj, 0.5, 1))
+    beta <- runif(ntraj, -1, 0)
+    kap <- runif(ntraj, 0.5, 1.5)
+    ndart <- matrix(runif(ntraj*nproj, -2, 2), nrow = ntraj)
+    for(const.var in c(FALSE, TRUE)) {
+        set.seed(1)
+        single <- sapply(1:ntraj, function(j) 
+            bayesLifeHIV:::do.e0.proj.hiv(x[j,], beta = beta[j], l.start = 50, kap = kap[j], 
+                                          ndart.traj = ndart[j,], n.proj = nproj, const.var = const.var))
+        set.seed(1)
+        multi <- bayesLifeHIV:::do.e0.proj.hiv.multi(x, beta = beta, l.start = 50, kap = kap, 
+                                                     ndart.trajs = ndart, n.proj = nproj, const.var = const.var)
+        stopifnot(identical(single, multi))
+    }
+    # loess lookup (including values below the range)
+    e0 <- c(5, 20, 45.3, 60, 85, 99)
+    is.hiv <- c(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE)
+    lsd <- bayesLifeHIV:::loess.sd
+    expected <- sapply(1:length(e0), function(i) {
+        look.in <- if(is.hiv[i]) lsd$hiv else lsd
+        idx <- cut(e0[i], look.in$x, labels = FALSE, include.lowest = TRUE)
+        if(is.na(idx) && e0[i] < min(look.in$x)) idx <- 1
+        look.in$y[idx]
+    })
+    stopifnot(identical(bayesLifeHIV:::loess.lookup.hiv(e0, is.hiv), expected))
+    test.ok(test.name)
+}
+
 test.simulate5y <- function(wpp.year = 2019) {
 	sim.dir <- tempfile()
     # run MCMC

@@ -40,10 +40,11 @@ e0hiv.mcmc.sampling <- function(mcmc, thin = 1, start.iter = 2, verbose = FALSE,
                 newDL[colnames(DLdata[[country]])[DLdata[[country]]['post1950',]==1],country] <- dlf[[country]][DLdata[[country]]['post1950',]==1]
 		    # Update beta - Gibbs Sampler
 		    ##########################################
-    	    XX <- tcrossprod(t(X)%*%diag(1/sqrt(mcenv$omega^2*loess.vector)))
+		    # (scaling by vectors instead of multiplying by diagonal matrices gives the same result)
+    	    XX <- tcrossprod(t(X * (1/sqrt(mcenv$omega^2*loess.vector))))
 
             newDL.vector <- as.vector(t(newDL))[idxX]
-		    sxy <- t(X)%*%(diag(1/(mcenv$omega^2*loess.vector))%*%(dct.vector-newDL.vector))
+		    sxy <- t(X)%*%((1/(mcenv$omega^2*loess.vector)) * (dct.vector-newDL.vector))
 
 		    mcenv$betanonART <- rnorm(1,mean=sxy/(XX+sigbetainv),sd=sqrt(1/(XX+sigbetainv)))
         
